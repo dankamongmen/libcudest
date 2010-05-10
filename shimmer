@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e || exit 1
+set -o nounset
+
+usage () { echo "usage: `basename $0` -- command [ args ]" ; }
+usageerr() { usage >&2 ; return 1 ; }
+
+[ $# -ge 1 ] || usageerr
+
+SHIM=`pwd`/out/shim.so
+
+[ -r "$SHIM" ] || { echo "Couldn't read $SHIM" >&2 ; exit 1 ; }
+
+export LD_BIND_NOW=1
+export LD_PRELOAD="$SHIM"
+"$@"
