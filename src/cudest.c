@@ -16,6 +16,8 @@
 #define NVCTLDEV "/dev/nvidiactl"
 
 // http://nouveau.freedesktop.org/wiki/HwIntroduction
+#define REGS_PMC	((off_t)0x0000)
+#define REGLEN_PMC	((size_t)0x2000)
 #define REGS_PTIMER	((off_t)0x9000)
 #define REGLEN_PTIMER	((size_t)0x1000)
 
@@ -85,7 +87,7 @@ init_dev(unsigned dno,off_t regaddr){
 	off_t off;
 	int dfd;
 
-	off = regaddr + REGS_PTIMER;
+	off = regaddr + REGS_PMC;
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
@@ -93,8 +95,8 @@ init_dev(unsigned dno,off_t regaddr){
 		fprintf(stderr,"Couldn't open %s (%s)\n",devn,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	if((map = mmap(NULL,REGLEN_PTIMER,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
-		fprintf(stderr,"Couldn't map PTIMER (%s); check dmesg\n",strerror(errno));
+	if((map = mmap(NULL,REGLEN_PMC,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
+		fprintf(stderr,"Couldn't map PMC (%s); check dmesg\n",strerror(errno));
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
@@ -105,17 +107,17 @@ init_dev(unsigned dno,off_t regaddr){
 	td0.ob[4] = 0;
 	if(ioctl(dfd,NV_D0,&td0)){
 		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_D0,dfd,strerror(errno));
-		munmap(map,REGLEN_PTIMER);
+		munmap(map,REGLEN_PMC);
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	if(ioctl(dfd,NV_D0,&td0)){
 		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_D0,dfd,strerror(errno));
-		munmap(map,REGLEN_PTIMER);
+		munmap(map,REGLEN_PMC);
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	munmap(map,REGLEN_PTIMER);
+	munmap(map,REGLEN_PMC);
 	close(dfd);
 	return CUDA_SUCCESS;
 }
