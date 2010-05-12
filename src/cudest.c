@@ -75,16 +75,18 @@ static fourthtype t4;
 static type5 t5,ta,t7;
 static secondtype result0xca;
 
+#define DEVMAP_OFF ((off_t)0x9000)	// add this to the reg_address cardinfo
 #define DEVMAP_SIZE ((size_t)0x1000)
-#define DEVMAP_OFF ((off_t)0xf2009000)
 
 static CUresult
-init_dev(unsigned dno){
+init_dev(unsigned dno,off_t regaddr){
 	char devn[strlen(DEVROOT) + 4];
 	typed0 td0;
 	void *map;
+	off_t off;
 	int dfd;
 
+	off = regaddr + DEVMAP_OFF;
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
@@ -92,7 +94,7 @@ init_dev(unsigned dno){
 		fprintf(stderr,"Couldn't open %s (%s)\n",devn,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	if((map = mmap(NULL,DEVMAP_SIZE,PROT_READ,MAP_SHARED,dfd,DEVMAP_OFF)) == MAP_FAILED){
+	if((map = mmap(NULL,DEVMAP_SIZE,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
 		fprintf(stderr,"Couldn't mmap() %zx (%s)\n",DEVMAP_SIZE,strerror(errno));
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
@@ -140,6 +142,7 @@ static CUresult
 init_ctlfd(int fd){
 	nvhandshake hshake;
 	CUresult r;
+	int z;
 
 	memset(&hshake,0,sizeof(hshake));
 	//hshake.ob[2] = 0x35ull;		// 195.36.15
@@ -200,8 +203,15 @@ init_ctlfd(int fd){
 	if(ioctl(fd,NV_IA,&ta)){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	if((r = init_dev(0)) != CUDA_SUCCESS){
-		return r;
+	for(z = 0 ; z < cardcount ; ++z){ // FIXME what if non-contiguous?
+		const nv_ioctl_card_info_t *cd;
+
+		cd = &t3.descs[z];
+		if(cd->flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
+			if((r = init_dev(z,cd->reg_address)) != CUDA_SUCCESS){
+				return r;
+			}
+		}
 	}
 	if(ioctl(fd,NV_FIFTH,&t5)){
 		return CUDA_ERROR_INVALID_DEVICE;
