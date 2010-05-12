@@ -71,7 +71,7 @@ static type6 t6;
 static thirdtype t3;
 static fourthtype t4;
 static type5 t5,ta,t7;
-static uint32_t pat_supported;
+static nv_ioctl_env_info_t pat_supported;
 
 #define DEVMAP_OFF ((off_t)0x9000)	// add this to the reg_address cardinfo
 #define DEVMAP_SIZE ((size_t)0x1000)
