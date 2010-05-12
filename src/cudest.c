@@ -119,6 +119,23 @@ init_dev(unsigned dno){
 	return CUDA_SUCCESS;
 }
 
+// For now, maxcds must equal MAX_CARDS FIXME
+static int
+get_card_info(int fd,int *count,nv_ioctl_card_info_t *cds,unsigned maxcds){
+	*count = 0;
+	memset(cds,0xff,maxcds / CHAR_BIT); // FIXME how does mask work?
+	if(ioctl(fd,NV_CARDINFO,cds)){
+		fprintf(stderr,"Error getting card info on fd %d (%s)\n",fd,strerror(errno));
+		return -1;
+	}
+	while(maxcds--){
+		if(cds[maxcds].flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
+			++*count;
+		}
+	}
+	return 0;
+}
+
 static CUresult
 init_ctlfd(int fd){
 	nvhandshake hshake;
@@ -141,9 +158,7 @@ init_ctlfd(int fd){
 		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_SECOND,fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	memset(&t3,0xff,MAX_CARDS / CHAR_BIT); // FIXME
-	if(ioctl(fd,NV_CARDINFO,&t3)){
-		fprintf(stderr,"Error getting card info on fd %d (%s)\n",fd,strerror(errno));
+	if(get_card_info(fd,&cardcount,t3.descs,MAX_CARDS)){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	if(ioctl(fd,NV_FOURTH,&t4)){
