@@ -15,6 +15,10 @@
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
 
+// http://nouveau.freedesktop.org/wiki/HwIntroduction
+#define REGS_PTIMER	((off_t)0x9000)
+#define REGLEN_PTIMER	((size_t)0x1000)
+
 // Reverse-engineered from strace and binary analysis.
 typedef enum {
 	NV_VERCHECK	= 0xc0484600 + NV_ESC_CHECK_VERSION_STR,
@@ -73,9 +77,6 @@ static fourthtype t4;
 static type5 t5,ta,t7;
 static nv_ioctl_env_info_t pat_supported;
 
-#define DEVMAP_OFF ((off_t)0x9000)	// add this to the reg_address cardinfo
-#define DEVMAP_SIZE ((size_t)0x1000)
-
 static CUresult
 init_dev(unsigned dno,off_t regaddr){
 	char devn[strlen(DEVROOT) + 4];
@@ -84,7 +85,7 @@ init_dev(unsigned dno,off_t regaddr){
 	off_t off;
 	int dfd;
 
-	off = regaddr + DEVMAP_OFF;
+	off = regaddr + REGS_PTIMER;
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
@@ -92,8 +93,8 @@ init_dev(unsigned dno,off_t regaddr){
 		fprintf(stderr,"Couldn't open %s (%s)\n",devn,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	if((map = mmap(NULL,DEVMAP_SIZE,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
-		fprintf(stderr,"Couldn't mmap() %zx (%s); check dmesg\n",DEVMAP_SIZE,strerror(errno));
+	if((map = mmap(NULL,REGLEN_PTIMER,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
+		fprintf(stderr,"Couldn't map PTIMER (%s); check dmesg\n",strerror(errno));
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
@@ -104,17 +105,17 @@ init_dev(unsigned dno,off_t regaddr){
 	td0.ob[4] = 0;
 	if(ioctl(dfd,NV_D0,&td0)){
 		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_D0,dfd,strerror(errno));
-		munmap(map,DEVMAP_SIZE);
+		munmap(map,REGLEN_PTIMER);
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	if(ioctl(dfd,NV_D0,&td0)){
 		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_D0,dfd,strerror(errno));
-		munmap(map,DEVMAP_SIZE);
+		munmap(map,REGLEN_PTIMER);
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	munmap(map,DEVMAP_SIZE);
+	munmap(map,REGLEN_PTIMER);
 	close(dfd);
 	return CUDA_SUCCESS;
 }
