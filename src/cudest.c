@@ -18,7 +18,7 @@
 // Reverse-engineered from strace and binary analysis.
 typedef enum {
 	NV_VERCHECK	= 0xc0484600 + NV_ESC_CHECK_VERSION_STR,
-	NV_SECOND	= 0xc0044600 + NV_ESC_ENV_INFO,
+	NV_ENVINFO	= 0xc0044600 + NV_ESC_ENV_INFO,
 	NV_CARDINFO	= 0xc6004600 + NV_ESC_CARD_INFO,
 	NV_FOURTH	= 0xc00c4622,
 	NV_FIFTH	= 0xc020462a,
@@ -39,8 +39,6 @@ static int nvctl = -1;
 typedef struct nvhandshake {
 	uint64_t ob[9];	// 0x48 bytes
 } nvhandshake;
-
-typedef uint32_t secondtype;
 
 #define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
 
@@ -73,7 +71,7 @@ static type6 t6;
 static thirdtype t3;
 static fourthtype t4;
 static type5 t5,ta,t7;
-static secondtype result0xca;
+static uint32_t pat_supported;
 
 #define DEVMAP_OFF ((off_t)0x9000)	// add this to the reg_address cardinfo
 #define DEVMAP_SIZE ((size_t)0x1000)
@@ -157,8 +155,8 @@ init_ctlfd(int fd){
 		fprintf(stderr,"Version rejected; check dmesg (got 0x%lx)\n",hshake.ob[0]);
 		return CUDA_ERROR_INVALID_VALUE;
 	}
-	if(ioctl(fd,NV_SECOND,&result0xca)){
-		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_SECOND,fd,strerror(errno));
+	if(ioctl(fd,NV_ENVINFO,&pat_supported)){
+		fprintf(stderr,"Error checking PATs on fd %d (%s)\n",fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	if(get_card_info(fd,&cardcount,t3.descs,MAX_CARDS)){
