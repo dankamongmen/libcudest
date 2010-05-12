@@ -27,6 +27,7 @@ void *mmap64(void *addr,size_t len,int prot,int flags,int fd,off_t off){
 			return MAP_FAILED;
 		}
 	}
+	printf("offset: 0x%jx\n",off);
 	if(addr){
 		printf("mmap 0x%zxb %d [%c%c%c%c] @ %p (%s)",len,fd,
 				prot & PROT_READ ? 'R' : 'r',
