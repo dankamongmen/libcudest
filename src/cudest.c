@@ -1,8 +1,10 @@
+#include <nv-misc.h>
 #include <nv.h>
 #include "cudest.h"
-#include <errno.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <limits.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdint.h>
@@ -15,9 +17,9 @@
 
 // Reverse-engineered from strace and binary analysis.
 typedef enum {
-	NV_VERCHECK	= 0xc04846d2,
-	NV_SECOND	= 0xc00446ca,
-	NV_THIRD	= 0xc60046c8,
+	NV_VERCHECK	= 0xc0484600 + NV_ESC_CHECK_VERSION_STR,
+	NV_SECOND	= 0xc0044600 + NV_ESC_ENV_INFO,
+	NV_CARDINFO	= 0xc6004600 + NV_ESC_CARD_INFO,
 	NV_FOURTH	= 0xc00c4622,
 	NV_FIFTH	= 0xc020462a,
 	NV_I6		= 0xc048464d,
@@ -40,8 +42,10 @@ typedef struct nvhandshake {
 
 typedef uint32_t secondtype;
 
-typedef struct thirdtype {
-	uint32_t ob[384];	// 1536 (0x600) bytes
+#define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
+
+typedef struct {
+	nv_ioctl_card_info_t descs[MAX_CARDS];
 } thirdtype;
 
 typedef struct fourthtype {
@@ -125,7 +129,7 @@ init_ctlfd(int fd){
 	hshake.ob[2] = 0x34ull;			// 195.36.24
 	hshake.ob[1] = 0x322e36332e353931ull;	// 195.36.24
 	if(ioctl(fd,NV_VERCHECK,&hshake)){
-		fprintf(stderr,"Error sending version check 0x%x to fd %d (%s)\n",NV_VERCHECK,fd,strerror(errno));
+		fprintf(stderr,"Error checking version on fd %d (%s)\n",fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	if(hshake.ob[0] != 0x100000000ull){ // FIXME
@@ -136,9 +140,9 @@ init_ctlfd(int fd){
 		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_SECOND,fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	t3.ob[0] = (uint32_t)-1;
-	if(ioctl(fd,NV_THIRD,&t3)){
-		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_THIRD,fd,strerror(errno));
+	memset(&t3,0xff,MAX_CARDS / CHAR_BIT); // FIXME
+	if(ioctl(fd,NV_CARDINFO,&t3)){
+		fprintf(stderr,"Error getting card info on fd %d (%s)\n",fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	if(ioctl(fd,NV_FOURTH,&t4)){
