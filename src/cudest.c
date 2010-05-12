@@ -37,7 +37,7 @@ typedef enum {
 static int nvctl = -1;
 
 typedef struct nvhandshake {
-	uint64_t ob[9];	// 0x48 bytes
+	uint32_t ob[18];	// 0x48 bytes
 } nvhandshake;
 
 #define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
@@ -145,16 +145,18 @@ init_ctlfd(int fd){
 	memset(&hshake,0,sizeof(hshake));
 	//hshake.ob[2] = 0x35ull;		// 195.36.15
 	//hshake.ob[1] = 0x312e36332e353931ull;	// 195.36.15
-	hshake.ob[2] = 0x34ull;			// 195.36.24
-	hshake.ob[1] = 0x322e36332e353931ull;	// 195.36.24
+	hshake.ob[2] = 0x2e353931ul;
+	hshake.ob[3] = 0x322e3633ul;
+	hshake.ob[4] = 0x34ull;			// 195.36.24
 	if(ioctl(fd,NV_VERCHECK,&hshake)){
 		fprintf(stderr,"Error checking version on fd %d (%s)\n",fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	if(hshake.ob[0] != 0x100000000ull){ // FIXME
-		fprintf(stderr,"Version rejected; check dmesg (got 0x%lx)\n",hshake.ob[0]);
+	if(hshake.ob[1] != NV_RM_API_VERSION_REPLY_RECOGNIZED){
+		fprintf(stderr,"Version rejected; check dmesg (got 0x%x)\n",hshake.ob[0]);
 		return CUDA_ERROR_INVALID_VALUE;
 	}
+	memset(&pat_supported,0,sizeof(pat_supported));
 	if(ioctl(fd,NV_ENVINFO,&pat_supported)){
 		fprintf(stderr,"Error checking PATs on fd %d (%s)\n",fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
