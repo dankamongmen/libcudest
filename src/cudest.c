@@ -14,7 +14,7 @@
 
 // Reverse-engineered from strace and binary analysis.
 typedef enum {
-	NV_HANDSHAKE	= 0xc04846d2,
+	NV_VERCHECK	= 0xc04846d2,
 	NV_SECOND	= 0xc00446ca,
 	NV_THIRD	= 0xc60046c8,
 	NV_FOURTH	= 0xc00c4622,
@@ -123,9 +123,13 @@ init_ctlfd(int fd){
 	//hshake.ob[1] = 0x312e36332e353931ull;	// 195.36.15
 	hshake.ob[2] = 0x34ull;			// 195.36.24
 	hshake.ob[1] = 0x322e36332e353931ull;	// 195.36.24
-	if(ioctl(fd,NV_HANDSHAKE,&hshake)){
-		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_HANDSHAKE,fd,strerror(errno));
+	if(ioctl(fd,NV_VERCHECK,&hshake)){
+		fprintf(stderr,"Error sending version check 0x%x to fd %d (%s)\n",NV_VERCHECK,fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
+	}
+	if(hshake.ob[0] != 0x100000000ull){ // FIXME
+		fprintf(stderr,"Version rejected; check dmesg (got 0x%lx)\n",hshake.ob[0]);
+		return CUDA_ERROR_INVALID_VALUE;
 	}
 	if(ioctl(fd,NV_SECOND,&result0xca)){
 		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_SECOND,fd,strerror(errno));
