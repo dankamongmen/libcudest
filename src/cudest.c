@@ -44,6 +44,7 @@ typedef uint32_t secondtype;
 
 #define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
 
+static int cardcount;
 typedef struct {
 	nv_ioctl_card_info_t descs[MAX_CARDS];
 } thirdtype;
@@ -235,5 +236,10 @@ CUresult cuDeviceGet(CUdevice *d,int devno){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
 	d->devno = devno;
+	return CUDA_SUCCESS;
+}
+
+CUresult cuDeviceGetCount(int *count){
+	*count = cardcount;
 	return CUDA_SUCCESS;
 }
