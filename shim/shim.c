@@ -66,7 +66,6 @@ void *mmap64(void *addr,size_t len,int prot,int flags,int fd,off_t off){
 		}
 	}
 	printf("\n");
-	//return MAP_FAILED;
 	return r;
 }
 
