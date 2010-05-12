@@ -95,7 +95,7 @@ init_dev(unsigned dno,off_t regaddr){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	if((map = mmap(NULL,DEVMAP_SIZE,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
-		fprintf(stderr,"Couldn't mmap() %zx (%s)\n",DEVMAP_SIZE,strerror(errno));
+		fprintf(stderr,"Couldn't mmap() %zx (%s); check dmesg\n",DEVMAP_SIZE,strerror(errno));
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
