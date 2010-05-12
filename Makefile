@@ -15,8 +15,11 @@ LIB:=$(OUT)/libcudest.so $(OUT)/shim.so
 TAGBIN:=ctags
 TAGS:=.tags
 
+# FIXME, obviously
+NVSRC?=$(HOME)/NVIDIA-Linux-x86_64-195.36.24-pkg2/usr/src/nv
+
 CC?=gcc
-IFLAGS:=-Isrc
+IFLAGS:=-Isrc -I$(NVSRC)
 CFLAGS:=-pipe -g -ggdb -D_GNU_SOURCE -std=gnu99 $(IFLAGS) -fpic -Wall -W -Werror -march=native -mtune=native
 
 BIN:=$(OUT)/cudaminimal $(OUT)/cudaminimal-base $(OUT)/cudaspawner

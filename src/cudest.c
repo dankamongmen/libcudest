@@ -1,3 +1,4 @@
+#include <nv.h>
 #include "cudest.h"
 #include <errno.h>
 #include <stdio.h>
