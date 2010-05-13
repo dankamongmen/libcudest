@@ -41,7 +41,7 @@ void *mmap64(void *addr,size_t len,int prot,int flags,int fd,off_t off){
 				prot & PROT_READ ? 'R' : 'r',
 				prot & PROT_WRITE ? 'W' : 'w',
 				prot & PROT_EXEC ? 'X' : 'x',
-				flags & MAP_PRIVATE ? 'p' : 's');
+				flags & MAP_PRIVATE ? 'P' : 'S');
 	}
 	fflush(stdout);
 	r = shim_mmap(addr,len,prot,flags,fd,off);
