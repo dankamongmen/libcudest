@@ -55,25 +55,30 @@ id_cuda(int dev,unsigned *mem,unsigned *tmem,int *state){
 	}
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
+		fprintf(stderr,"Error aquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,cerr);
 		return cerr;
 	}
 	*state = attr;
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_INTEGRATED,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
+		fprintf(stderr,"Error aquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_INTEGRATED,cerr);
 		return cerr;
 	}
 	integrated = attr;
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
+		fprintf(stderr,"Error aquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,cerr);
 		return cerr;
 	}
 	if((cerr = cuDeviceComputeCapability(&major,&minor,c)) != CUDA_SUCCESS){
+		fprintf(stderr,"Error determining compute capability (%d)\n",cerr);
 		return cerr;
 	}
 	if((str = malloc(CUDASTRLEN)) == NULL){
 		return -1;
 	}
 	if((cerr = cuDeviceGetName((char *)str,CUDASTRLEN,c)) != CUDA_SUCCESS){
+		fprintf(stderr,"Error determining device name (%d)\n",cerr);
 		goto err;
 	}
 	if((cerr = cuCtxCreate(&ctx,CU_CTX_MAP_HOST|CU_CTX_SCHED_YIELD,c)) != CUDA_SUCCESS){
@@ -81,6 +86,7 @@ id_cuda(int dev,unsigned *mem,unsigned *tmem,int *state){
 		goto err;
 	}
 	if((cerr = cuMemGetInfo(mem,tmem)) != CUDA_SUCCESS){
+		fprintf(stderr,"Error getting memory info (%d)\n",cerr);
 		cuCtxDetach(ctx);
 		goto err;
 	}
