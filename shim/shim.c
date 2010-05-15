@@ -168,7 +168,7 @@ char *getenv(const char *name){
 	}
 	printf("getenv(\x1b[1m%s\x1b[0m) = ",name);
 	if( (r = shim_getenv(name)) ){
-		printf("\x1b\"[1m\"%s\x1b[0m\n",r);
+		printf("\x1b[1m\"%s\"\x1b[0m\n",r);
 	}else{
 		printf("\x1b[1mNULL\x1b[0m\n");
 	}
