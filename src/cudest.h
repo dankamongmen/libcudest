@@ -126,7 +126,7 @@ typedef void *CUdeviceptr;
 
 struct CUdevice_opaque;
 
-typedef struct CUdevice_opaque *CUdevice;
+typedef const struct CUdevice_opaque *CUdevice;
 
 CUresult CUDAAPI cuInit(unsigned);
 
