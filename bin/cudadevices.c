@@ -55,19 +55,19 @@ id_cuda(int dev,unsigned *mem,unsigned *tmem,int *state){
 	}
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
-		fprintf(stderr,"Error aquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,cerr);
+		fprintf(stderr,"Error acquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,cerr);
 		return cerr;
 	}
 	*state = attr;
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_INTEGRATED,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
-		fprintf(stderr,"Error aquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_INTEGRATED,cerr);
+		fprintf(stderr,"Error acquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_INTEGRATED,cerr);
 		return cerr;
 	}
 	integrated = attr;
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
-		fprintf(stderr,"Error aquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,cerr);
+		fprintf(stderr,"Error acquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,cerr);
 		return cerr;
 	}
 	if((cerr = cuDeviceComputeCapability(&major,&minor,c)) != CUDA_SUCCESS){
