@@ -15,10 +15,14 @@
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
 
+#define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
+
 typedef struct CUdevice_opaque {
-	int devno;
+	int valid;
 	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
 } CUdevice_opaque;
+
+static CUdevice_opaque devs[MAX_CARDS];
 
 // http://nouveau.freedesktop.org/wiki/HwIntroduction
 #define REGS_PMC	((off_t)0x0000)
@@ -50,8 +54,6 @@ static int nvctl = -1;
 typedef struct nvhandshake {
 	uint32_t ob[18];	// 0x48 bytes
 } nvhandshake;
-
-#define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
 
 static int cardcount;
 typedef struct {
@@ -85,13 +87,14 @@ static type5 t5,ta,t7;
 static nv_ioctl_env_info_t pat_supported;
 
 static CUresult
-init_dev(unsigned dno,off_t regaddr){
+init_dev(unsigned dno,CUdevice_opaque *dev,off_t regaddr){
 	char devn[strlen(DEVROOT) + 4];
 	typed0 td0;
 	void *map;
 	off_t off;
 	int dfd;
 
+	memset(dev->attrs,0,sizeof(dev->attrs));
 	off = regaddr + REGS_PMC;
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
@@ -212,11 +215,13 @@ init_ctlfd(int fd){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	for(z = 0 ; z < cardcount ; ++z){ // FIXME what if non-contiguous?
+		CUdevice_opaque *dev = &devs[z];
 		const nv_ioctl_card_info_t *cd;
 
 		cd = &t3.descs[z];
-		if(cd->flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
-			if((r = init_dev(z,cd->reg_address)) != CUDA_SUCCESS){
+		dev->valid = cd->flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT;
+		if(dev->valid){
+			if((r = init_dev(z,dev,cd->reg_address)) != CUDA_SUCCESS){
 				return r;
 			}
 		}
@@ -265,10 +270,10 @@ CUresult cuInit(unsigned flags){
 }
 
 CUresult cuDeviceGet(CUdevice *d,int devno){
-	if(devno < 0){
+	if(devno < 0 || (unsigned)devno >= sizeof(devs) / sizeof(*devs)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
-	(*d)->devno = devno; // FIXME
+	*d = &devs[devno];
 	return CUDA_SUCCESS;
 }
 
