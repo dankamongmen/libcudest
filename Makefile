@@ -36,7 +36,7 @@ $(OUT)/cudactx: $(CTXSRC) $(LIB)
 	$(CC) $(CFLAGS) -o $@ $< -L$(OUT) -Wl,-R$(OUT) -lcuda
 
 $(OUT)/cudadevices: $(DEVSRC) $(LIB)
-	$(CC) $(CFLAGS) -o $@ $< -L$(OUT) -Wl,-R$(OUT) -lcudest -lcuda
+	$(CC) $(CFLAGS) -o $@ $< -L$(OUT) -Wl,-R$(OUT) -lcuda
 
 $(OUT)/cudaminimal: $(MINSRC) $(LIB)
 	$(CC) $(CFLAGS) -o $@ $< -L$(OUT) -Wl,-R$(OUT) -lcudest -lcuda

@@ -54,13 +54,13 @@ id_cuda(int dev,unsigned *mem,unsigned *tmem,int *state){
 		return -1;
 	}
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,c);
-	if(cerr != CUDA_SUCCESS || attr <= 0){
+	if(cerr != CUDA_SUCCESS || attr < 0){
 		fprintf(stderr,"Error acquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,cerr);
 		return -1;
 	}
 	*state = attr;
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_INTEGRATED,c);
-	if(cerr != CUDA_SUCCESS || attr <= 0){
+	if(cerr != CUDA_SUCCESS || attr < 0){
 		fprintf(stderr,"Error acquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_INTEGRATED,cerr);
 		return -1;
 	}
