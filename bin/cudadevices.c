@@ -51,28 +51,28 @@ id_cuda(int dev,unsigned *mem,unsigned *tmem,int *state){
 	*state = 0;
 	if((cerr = cuDeviceGet(&c,dev)) != CUDA_SUCCESS){
 		fprintf(stderr," Couldn't associative with device (%d)\n",cerr);
-		return cerr;
+		return -1;
 	}
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
 		fprintf(stderr,"Error acquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_COMPUTE_MODE,cerr);
-		return cerr;
+		return -1;
 	}
 	*state = attr;
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_INTEGRATED,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
 		fprintf(stderr,"Error acquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_INTEGRATED,cerr);
-		return cerr;
+		return -1;
 	}
 	integrated = attr;
 	cerr = cuDeviceGetAttribute(&attr,CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,c);
 	if(cerr != CUDA_SUCCESS || attr <= 0){
 		fprintf(stderr,"Error acquiring attribute %d (%d)\n",CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,cerr);
-		return cerr;
+		return -1;
 	}
 	if((cerr = cuDeviceComputeCapability(&major,&minor,c)) != CUDA_SUCCESS){
 		fprintf(stderr,"Error determining compute capability (%d)\n",cerr);
-		return cerr;
+		return -1;
 	}
 	if((str = malloc(CUDASTRLEN)) == NULL){
 		return -1;
@@ -105,9 +105,9 @@ id_cuda(int dev,unsigned *mem,unsigned *tmem,int *state){
 	free(str);
 	return CUDA_SUCCESS;
 
-err:	// cerr ought already be set!
+err:
 	free(str);
-	return cerr;
+	return cerr ? cerr : -1;
 }
 
 static void
@@ -131,6 +131,7 @@ int main(int argc,char **argv){
 		int state;
 
 		printf(" %03d ",z);
+		fflush(stdout);
 		if(id_cuda(z,&mem,&tmem,&state)){
 			return EXIT_FAILURE;
 		}
