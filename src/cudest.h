@@ -98,15 +98,12 @@ typedef enum CUdevice_attribute_enum {
     CU_DEVICE_ATTRIBUTE_CONCURRENT_KERNELS = 31, ///< Device can possibly execute multiple kernels concurrently
     CU_DEVICE_ATTRIBUTE_ECC_ENABLED = 32 ///< Device has ECC support enabled
 } CUdevice_attribute;
+
 #ifdef _WIN32
 #define CUDAAPI __stdcall
 #else
 #define CUDAAPI 
 #endif
-
-typedef struct CUdevice {
-	int devno;
-} CUdevice;
 
 typedef struct opCUcontext {
 	pthread_t tid;
@@ -126,6 +123,10 @@ typedef enum CUctx_flags_enum {
 } CUctx_flags;
 
 typedef void *CUdeviceptr;
+
+struct CUdevice_opaque;
+
+typedef struct CUdevice_opaque *CUdevice;
 
 CUresult CUDAAPI cuInit(unsigned);
 

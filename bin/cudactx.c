@@ -1,4 +1,4 @@
-#include <cuda.h>
+#include <cudest.h>
 #include <errno.h>
 #include <stdio.h>
 #include <limits.h>

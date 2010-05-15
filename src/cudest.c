@@ -15,6 +15,11 @@
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
 
+typedef struct CUdevice_opaque {
+	int devno;
+	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
+} CUdevice_opaque;
+
 // http://nouveau.freedesktop.org/wiki/HwIntroduction
 #define REGS_PMC	((off_t)0x0000)
 #define REGLEN_PMC	((size_t)0x2000)
@@ -263,11 +268,19 @@ CUresult cuDeviceGet(CUdevice *d,int devno){
 	if(devno < 0){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
-	d->devno = devno;
+	(*d)->devno = devno; // FIXME
 	return CUDA_SUCCESS;
 }
 
 CUresult cuDeviceGetCount(int *count){
 	*count = cardcount;
+	return CUDA_SUCCESS;
+}
+
+CUresult cuDeviceGetAttribute(int *attr,CUdevice_attribute spec,CUdevice dev){
+	if(spec >= sizeof(dev->attrs) / sizeof(*dev->attrs)){
+		return CUDA_ERROR_INVALID_VALUE;
+	}
+	*attr = dev->attrs[spec];
 	return CUDA_SUCCESS;
 }
