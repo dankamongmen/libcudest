@@ -149,6 +149,29 @@ int ioctl(int fd,int req,uintptr_t op){//,unsigned o1,unsigned o2){
 	return r;
 }
 
+size_t strlen(const char *s){
+	static size_t (*shim_strlen)(const char *);
+	size_t r;
+
+	if(shim_strlen == NULL){
+		const char *msg;
+
+		fprintf(stderr,"shimming system's strlen(2)\n");
+		if((shim_strlen = dlsym(RTLD_NEXT,"strlen")) == NULL){
+			fprintf(stderr,"got a NULL strlen(2)\n");
+			return 0;
+		}
+		if( (msg = dlerror()) ){
+			fprintf(stderr,"couldn't shim strlen(2): %s\n",msg);
+			return 0;
+		}
+	}
+	printf("strlen(\x1b[1m%s\x1b[0m) = ",s);
+	r = shim_strlen(s);
+	printf("\x1b[1m\"%zu\"\x1b[0m\n",r);
+	return r;
+}
+
 char *getenv(const char *name){
 	static char *(*shim_getenv)(const char *);
 	char *r;
