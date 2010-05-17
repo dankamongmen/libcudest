@@ -168,7 +168,7 @@ int open64(const char *p,int flags,mode_t mode){
 	}
 	printf("open(\x1b[1m\"%s\", \"%d\"\x1b[0m) = ",p,flags);
 	r = shim_open(p,flags,mode);
-	printf("\x1b[1m\"%d\"\x1b[0m\n",r);
+	printf("\x1b[1m%d\x1b[0m\n",r);
 	return r;
 }
 
@@ -191,7 +191,7 @@ int strcoll(const char *s0,const char *s1){
 	}
 	printf("strcoll(\x1b[1m\"%s\", \"%s\"\x1b[0m) = ",s0,s1);
 	r = shim_strcoll(s0,s1);
-	printf("\x1b[1m\"%d\"\x1b[0m\n",r);
+	printf("\x1b[1m%d\x1b[0m\n",r);
 	return r;
 }
 
@@ -214,7 +214,7 @@ int strcmp(const char *s0,const char *s1){
 	}
 	printf("strcmp(\x1b[1m\"%s\", \"%s\"\x1b[0m) = ",s0,s1);
 	r = shim_strcmp(s0,s1);
-	printf("\x1b[1m\"%d\"\x1b[0m\n",r);
+	printf("\x1b[1m%d\x1b[0m\n",r);
 	return r;
 }
 
@@ -237,7 +237,7 @@ int strncmp(const char *s0,const char *s1,size_t n){
 	}
 	printf("strcmp(\x1b[1m\"%s\", \"%s\", %zu\x1b[0m) = ",s0,s1,n);
 	r = shim_strcmp(s0,s1,n);
-	printf("\x1b[1m\"%d\"\x1b[0m\n",r);
+	printf("\x1b[1m%d\x1b[0m\n",r);
 	return r;
 }
 
