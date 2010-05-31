@@ -12,6 +12,9 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
+// 195.36.15, 195.36.24
+#define CUDARUNVER	"256.22"
+
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
 
@@ -144,21 +147,43 @@ get_card_info(int fd,int *count,nv_ioctl_card_info_t *cds,unsigned maxcds){
 			++*count;
 		}
 	}
+	printf("Found %d cards\n",*count);
+	return 0;
+}
+
+static int
+convert_version(uint32_t *ob3,const char *verstr){
+	unsigned z;
+
+	for(z = 0 ; z < 3 ; ++z){
+		unsigned y,shl = 1;
+
+		ob3[z] = 0;
+		for(y = 0 ; y < sizeof(*ob3) && *verstr ; ++y, ++verstr){
+			if((*verstr < '0' || *verstr > '9') && *verstr != '.'){
+				return -1;
+			}
+			ob3[z] += (*(unsigned const char *)verstr) * shl;
+			shl <<= 8u;
+		}
+	}
+	if(*verstr){
+		return -1;
+	}
 	return 0;
 }
 
 static CUresult
-init_ctlfd(int fd){
+init_ctlfd(int fd,const char *ver){
 	nvhandshake hshake;
 	CUresult r;
 	int z;
 
 	memset(&hshake,0,sizeof(hshake));
-	//hshake.ob[2] = 0x35ull;		// 195.36.15
-	//hshake.ob[1] = 0x312e36332e353931ull;	// 195.36.15
-	hshake.ob[2] = 0x2e353931ul;
-	hshake.ob[3] = 0x322e3633ul;
-	hshake.ob[4] = 0x34ull;			// 195.36.24
+	if(convert_version(hshake.ob + 2,ver)){
+		fprintf(stderr,"Bad version: \"%s\"\n",ver);
+		return CUDA_ERROR_INVALID_VALUE;
+	}
 	if(ioctl(fd,NV_VERCHECK,&hshake)){
 		fprintf(stderr,"Error checking version on fd %d (%s)\n",fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
@@ -167,6 +192,7 @@ init_ctlfd(int fd){
 		fprintf(stderr,"Version rejected; check dmesg (got 0x%x)\n",hshake.ob[0]);
 		return CUDA_ERROR_INVALID_VALUE;
 	}
+	printf("Verified version %s\n",ver);
 	memset(&pat_supported,0,sizeof(pat_supported));
 	if(ioctl(fd,NV_ENVINFO,&pat_supported)){
 		fprintf(stderr,"Error checking PATs on fd %d (%s)\n",fd,strerror(errno));
@@ -258,7 +284,7 @@ CUresult cuInit(unsigned flags){
 		fprintf(stderr,"Couldn't open %s (%s)\n",NVCTLDEV,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	if((r = init_ctlfd(fd)) != CUDA_SUCCESS){
+	if((r = init_ctlfd(fd,CUDARUNVER)) != CUDA_SUCCESS){
 		close(fd);
 		return r;
 	}
