@@ -201,10 +201,12 @@ init_ctlfd(int fd,const char *ver){
 	if(get_card_info(fd,&cardcount,t3.descs,MAX_CARDS)){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	/*
 	if(ioctl(fd,NV_FOURTH,&t4)){
 		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_FOURTH,fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	*/
 	t5.ob[0] = t4.ob[0];
 	t5.ob[1] = t4.ob[0];
 	t5.ob[2] = 0x215u;
