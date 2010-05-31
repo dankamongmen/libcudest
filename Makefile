@@ -9,8 +9,9 @@ SRC:=$(notdir $(wildcard src/*.c))
 SHIMSRC:=$(notdir $(wildcard shim/*.c))
 OBJ:=$(addsuffix .o,$(addprefix $(OUT)/,$(basename $(SRC))))
 SHIMOBJ:=$(addsuffix .o,$(addprefix $(OUT)/,$(basename $(SHIMSRC))))
+CTXSRC:=bin/cudactx.c
+DEVSRC:=bin/cudadevices.c
 MINSRC:=bin/cudaminimal.c
-SPAWNSRC:=bin/cudaspawner.c
 LIB:=$(OUT)/libcudest.so $(OUT)/shim.so
 TAGBIN:=ctags
 TAGS:=.tags
@@ -23,7 +24,7 @@ CC?=gcc
 IFLAGS:=-Isrc -I$(NVSRC)
 CFLAGS:=-pipe -g -ggdb -D_GNU_SOURCE -std=gnu99 $(IFLAGS) -fpic -Wall -W -Werror -march=native -mtune=native
 
-BIN:=$(OUT)/cudaminimal $(OUT)/cudaminimal-base $(OUT)/cudaspawner
+BIN:=$(OUT)/cudactx $(OUT)/cudactx-base $(OUT)/cudadevices $(OUT)/cudaminimal $(OUT)/cudaminimal-base
 
 all: $(LIB)
 
@@ -31,14 +32,20 @@ $(TAGS): $(addprefix src/,$(SRC)) $(addprefix shim/,$(SHIMSRC)) $(INC)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TAGBIN) -f $@ $^
 
+$(OUT)/cudactx: $(CTXSRC) $(LIB)
+	$(CC) $(CFLAGS) -o $@ $< -L$(OUT) -Wl,-R$(OUT) -lcudest -lcuda
+
+$(OUT)/cudactx-base: $(CTXSRC) $(LIB)
+	$(CC) $(CFLAGS) -o $@ $< -lcuda
+
+$(OUT)/cudadevices: $(DEVSRC) $(LIB)
+	$(CC) $(CFLAGS) -o $@ $< -L$(OUT) -Wl,-R$(OUT) -lcuda
+
 $(OUT)/cudaminimal: $(MINSRC) $(LIB)
 	$(CC) $(CFLAGS) -o $@ $< -L$(OUT) -Wl,-R$(OUT) -lcudest -lcuda
 
 $(OUT)/cudaminimal-base: $(MINSRC)
 	$(CC) $(CFLAGS) -o $@ $< -lcuda
-
-$(OUT)/cudaspawner: $(SPAWNSRC) $(LIB)
-	$(CC) $(CFLAGS) -o $@ $< -L$(OUT) -Wl,-R$(OUT) -lcudest -lcuda
 
 $(OUT)/shim.so: $(SHIMOBJ)
 	@[ -d $(@D) ] || mkdir -p $(@D)
@@ -64,9 +71,10 @@ $(OUT)/%.o: src/%.c $(INC) $(TAGS)
 	pdflatex $<
 
 test: all $(BIN)
+	./$(OUT)/cudadevices
+	./$(OUT)/cudactx 0
 	./$(OUT)/cudaminimal-base
 	./$(OUT)/cudaminimal
-	#./$(OUT)/cudaspawner 0 0
 
 clean:
 	rm -rf $(OUT)

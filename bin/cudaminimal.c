@@ -1,4 +1,4 @@
-#include <cuda.h>
+#include <cudest.h>
 #include <stdio.h>
 #include <errno.h>
 #include <signal.h>

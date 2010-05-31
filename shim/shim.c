@@ -41,7 +41,7 @@ void *mmap64(void *addr,size_t len,int prot,int flags,int fd,off_t off){
 				prot & PROT_READ ? 'R' : 'r',
 				prot & PROT_WRITE ? 'W' : 'w',
 				prot & PROT_EXEC ? 'X' : 'x',
-				flags & MAP_PRIVATE ? 'p' : 's');
+				flags & MAP_PRIVATE ? 'P' : 'S');
 	}
 	fflush(stdout);
 	r = shim_mmap(addr,len,prot,flags,fd,off);
@@ -149,6 +149,121 @@ int ioctl(int fd,int req,uintptr_t op){//,unsigned o1,unsigned o2){
 	return r;
 }
 
+int open64(const char *p,int flags,mode_t mode){
+	static int (*shim_open)(const char *,int,mode_t);
+	int r;
+
+	if(shim_open == NULL){
+		const char *msg;
+
+		fprintf(stderr,"shimming system's open(2)\n");
+		if((shim_open = dlsym(RTLD_NEXT,"open")) == NULL){
+			fprintf(stderr,"got a NULL open(2)\n");
+			return 0;
+		}
+		if( (msg = dlerror()) ){
+			fprintf(stderr,"couldn't shim open(2): %s\n",msg);
+			return 0;
+		}
+	}
+	printf("open(\x1b[1m\"%s\", \"%d\"\x1b[0m) = ",p,flags);
+	r = shim_open(p,flags,mode);
+	printf("\x1b[1m%d\x1b[0m\n",r);
+	return r;
+}
+
+int strcoll(const char *s0,const char *s1){
+	static int (*shim_strcoll)(const char *,const char *);
+	int r;
+
+	if(shim_strcoll == NULL){
+		const char *msg;
+
+		fprintf(stderr,"shimming system's strcoll(2)\n");
+		if((shim_strcoll = dlsym(RTLD_NEXT,"strcoll")) == NULL){
+			fprintf(stderr,"got a NULL strcoll(2)\n");
+			return 0;
+		}
+		if( (msg = dlerror()) ){
+			fprintf(stderr,"couldn't shim strcoll(2): %s\n",msg);
+			return 0;
+		}
+	}
+	printf("strcoll(\x1b[1m\"%s\", \"%s\"\x1b[0m) = ",s0,s1);
+	r = shim_strcoll(s0,s1);
+	printf("\x1b[1m%d\x1b[0m\n",r);
+	return r;
+}
+
+int strcmp(const char *s0,const char *s1){
+	static int (*shim_strcmp)(const char *,const char *);
+	int r;
+
+	if(shim_strcmp == NULL){
+		const char *msg;
+
+		fprintf(stderr,"shimming system's strcmp(2)\n");
+		if((shim_strcmp = dlsym(RTLD_NEXT,"strcmp")) == NULL){
+			fprintf(stderr,"got a NULL strcmp(2)\n");
+			return 0;
+		}
+		if( (msg = dlerror()) ){
+			fprintf(stderr,"couldn't shim strcmp(2): %s\n",msg);
+			return 0;
+		}
+	}
+	printf("strcmp(\x1b[1m\"%s\", \"%s\"\x1b[0m) = ",s0,s1);
+	r = shim_strcmp(s0,s1);
+	printf("\x1b[1m%d\x1b[0m\n",r);
+	return r;
+}
+
+int strncmp(const char *s0,const char *s1,size_t n){
+	static int (*shim_strcmp)(const char *,const char *,size_t);
+	int r;
+
+	if(shim_strcmp == NULL){
+		const char *msg;
+
+		fprintf(stderr,"shimming system's strcmp(2)\n");
+		if((shim_strcmp = dlsym(RTLD_NEXT,"strcmp")) == NULL){
+			fprintf(stderr,"got a NULL strcmp(2)\n");
+			return 0;
+		}
+		if( (msg = dlerror()) ){
+			fprintf(stderr,"couldn't shim strcmp(2): %s\n",msg);
+			return 0;
+		}
+	}
+	printf("strcmp(\x1b[1m\"%s\", \"%s\", %zu\x1b[0m) = ",s0,s1,n);
+	r = shim_strcmp(s0,s1,n);
+	printf("\x1b[1m%d\x1b[0m\n",r);
+	return r;
+}
+
+size_t strlen(const char *s){
+	static size_t (*shim_strlen)(const char *);
+	size_t r;
+
+	if(shim_strlen == NULL){
+		const char *msg;
+
+		fprintf(stderr,"shimming system's strlen(2)\n");
+		if((shim_strlen = dlsym(RTLD_NEXT,"strlen")) == NULL){
+			fprintf(stderr,"got a NULL strlen(2)\n");
+			return 0;
+		}
+		if( (msg = dlerror()) ){
+			fprintf(stderr,"couldn't shim strlen(2): %s\n",msg);
+			return 0;
+		}
+	}
+	printf("strlen(\x1b[1m%s\x1b[0m) = ",s);
+	r = shim_strlen(s);
+	printf("\x1b[1m\"%zu\"\x1b[0m\n",r);
+	return r;
+}
+
 char *getenv(const char *name){
 	static char *(*shim_getenv)(const char *);
 	char *r;
@@ -168,7 +283,7 @@ char *getenv(const char *name){
 	}
 	printf("getenv(\x1b[1m%s\x1b[0m) = ",name);
 	if( (r = shim_getenv(name)) ){
-		printf("\x1b\"[1m\"%s\x1b[0m\n",r);
+		printf("\x1b[1m\"%s\"\x1b[0m\n",r);
 	}else{
 		printf("\x1b[1mNULL\x1b[0m\n");
 	}

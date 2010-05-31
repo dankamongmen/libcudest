@@ -12,8 +12,20 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
+// 195.36.15, 195.36.24
+#define CUDARUNVER	"256.22"
+
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
+
+#define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
+
+typedef struct CUdevice_opaque {
+	int valid;
+	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
+} CUdevice_opaque;
+
+static CUdevice_opaque devs[MAX_CARDS];
 
 // http://nouveau.freedesktop.org/wiki/HwIntroduction
 #define REGS_PMC	((off_t)0x0000)
@@ -45,8 +57,6 @@ static int nvctl = -1;
 typedef struct nvhandshake {
 	uint32_t ob[18];	// 0x48 bytes
 } nvhandshake;
-
-#define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
 
 static int cardcount;
 typedef struct {
@@ -80,13 +90,14 @@ static type5 t5,ta,t7;
 static nv_ioctl_env_info_t pat_supported;
 
 static CUresult
-init_dev(unsigned dno,off_t regaddr){
+init_dev(unsigned dno,CUdevice_opaque *dev,off_t regaddr){
 	char devn[strlen(DEVROOT) + 4];
 	typed0 td0;
 	void *map;
 	off_t off;
 	int dfd;
 
+	memset(dev->attrs,0,sizeof(dev->attrs));
 	off = regaddr + REGS_PMC;
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
@@ -136,21 +147,43 @@ get_card_info(int fd,int *count,nv_ioctl_card_info_t *cds,unsigned maxcds){
 			++*count;
 		}
 	}
+	printf("Found %d cards\n",*count);
+	return 0;
+}
+
+static int
+convert_version(uint32_t *ob3,const char *verstr){
+	unsigned z;
+
+	for(z = 0 ; z < 3 ; ++z){
+		unsigned y,shl = 1;
+
+		ob3[z] = 0;
+		for(y = 0 ; y < sizeof(*ob3) && *verstr ; ++y, ++verstr){
+			if((*verstr < '0' || *verstr > '9') && *verstr != '.'){
+				return -1;
+			}
+			ob3[z] += (*(unsigned const char *)verstr) * shl;
+			shl <<= 8u;
+		}
+	}
+	if(*verstr){
+		return -1;
+	}
 	return 0;
 }
 
 static CUresult
-init_ctlfd(int fd){
+init_ctlfd(int fd,const char *ver){
 	nvhandshake hshake;
 	CUresult r;
 	int z;
 
 	memset(&hshake,0,sizeof(hshake));
-	//hshake.ob[2] = 0x35ull;		// 195.36.15
-	//hshake.ob[1] = 0x312e36332e353931ull;	// 195.36.15
-	hshake.ob[2] = 0x2e353931ul;
-	hshake.ob[3] = 0x322e3633ul;
-	hshake.ob[4] = 0x34ull;			// 195.36.24
+	if(convert_version(hshake.ob + 2,ver)){
+		fprintf(stderr,"Bad version: \"%s\"\n",ver);
+		return CUDA_ERROR_INVALID_VALUE;
+	}
 	if(ioctl(fd,NV_VERCHECK,&hshake)){
 		fprintf(stderr,"Error checking version on fd %d (%s)\n",fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
@@ -159,6 +192,7 @@ init_ctlfd(int fd){
 		fprintf(stderr,"Version rejected; check dmesg (got 0x%x)\n",hshake.ob[0]);
 		return CUDA_ERROR_INVALID_VALUE;
 	}
+	printf("Verified version %s\n",ver);
 	memset(&pat_supported,0,sizeof(pat_supported));
 	if(ioctl(fd,NV_ENVINFO,&pat_supported)){
 		fprintf(stderr,"Error checking PATs on fd %d (%s)\n",fd,strerror(errno));
@@ -207,11 +241,13 @@ init_ctlfd(int fd){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	for(z = 0 ; z < cardcount ; ++z){ // FIXME what if non-contiguous?
+		CUdevice_opaque *dev = &devs[z];
 		const nv_ioctl_card_info_t *cd;
 
 		cd = &t3.descs[z];
-		if(cd->flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
-			if((r = init_dev(z,cd->reg_address)) != CUDA_SUCCESS){
+		dev->valid = cd->flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT;
+		if(dev->valid){
+			if((r = init_dev(z,dev,cd->reg_address)) != CUDA_SUCCESS){
 				return r;
 			}
 		}
@@ -248,7 +284,7 @@ CUresult cuInit(unsigned flags){
 		fprintf(stderr,"Couldn't open %s (%s)\n",NVCTLDEV,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	if((r = init_ctlfd(fd)) != CUDA_SUCCESS){
+	if((r = init_ctlfd(fd,CUDARUNVER)) != CUDA_SUCCESS){
 		close(fd);
 		return r;
 	}
@@ -260,14 +296,22 @@ CUresult cuInit(unsigned flags){
 }
 
 CUresult cuDeviceGet(CUdevice *d,int devno){
-	if(devno < 0){
+	if(devno < 0 || (unsigned)devno >= sizeof(devs) / sizeof(*devs)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
-	d->devno = devno;
+	*d = &devs[devno];
 	return CUDA_SUCCESS;
 }
 
 CUresult cuDeviceGetCount(int *count){
 	*count = cardcount;
+	return CUDA_SUCCESS;
+}
+
+CUresult cuDeviceGetAttribute(int *attr,CUdevice_attribute spec,CUdevice dev){
+	if(spec >= sizeof(dev->attrs) / sizeof(*dev->attrs)){
+		return CUDA_ERROR_INVALID_VALUE;
+	}
+	*attr = dev->attrs[spec];
 	return CUDA_SUCCESS;
 }
