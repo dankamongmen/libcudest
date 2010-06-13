@@ -173,6 +173,8 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 		if(cds[maxcds].flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
 			const char *bus;
 
+			debug("Found a device (%u total), ID #%u (IRQ %u)\n",
+					*count,maxcds,devs[maxcds].irq);
 			devs[maxcds].regaddr = cds[maxcds].reg_address;
 			devs[maxcds].fbaddr = cds[maxcds].fb_address;
 			devs[maxcds].irq = cds[maxcds].interrupt_line;
@@ -187,16 +189,20 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 			devs[maxcds].valid = 1;
 			++*count;
 			if((bus = busname(devs[maxcds].busnumber)) == NULL){
-				fprintf(stderr,"Unknown bus type: %u\n",devs[maxcds].busnumber);
-				return -1;
+				fprintf(stderr,"Warning: unknown bus type %u (assuming PCIe)\n",
+						devs[maxcds].busnumber);
+				devs[maxcds].busnumber = NV_IOCTL_CARD_INFO_BUS_TYPE_PCI_EXPRESS;
+				debug("Domain: %u Slot: %u\n",
+				 devs[maxcds].pcidomain,devs[maxcds].slot);
+			}else{
+				debug("Bus: %s Domain: %u Slot: %u\n",bus,
+				 devs[maxcds].pcidomain,devs[maxcds].slot);
 			}
 			debug("Found a device (%u total), ID #%u (IRQ %u)\n",
 					*count,maxcds,devs[maxcds].irq);
 			debug("Vendor ID: 0x%04x Device ID: 0x%04x\n",
 				devs[maxcds].vendorid,devs[maxcds].deviceid);
 			debug("Flags: 0x%04x\n",devs[maxcds].flags);
-			debug("Bus: %s Domain: %u Slot: %u\n",bus,
-				devs[maxcds].pcidomain,devs[maxcds].slot);
 			debug("Framebuffer: 0x%zx @ 0x%jx\n",
 					devs[maxcds].fbsize,devs[maxcds].fbaddr);
 		}
