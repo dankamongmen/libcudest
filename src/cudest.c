@@ -25,6 +25,7 @@
 typedef struct CUdevice_opaque {
 	size_t regsize,fbsize;
 	uintmax_t regaddr,fbaddr;
+	unsigned arch;
 	unsigned flags;
 	unsigned irq;
 	unsigned vendorid,deviceid,gpuid;
@@ -99,8 +100,8 @@ static nv_ioctl_env_info_t envinfo;
 static CUresult
 init_dev(unsigned dno,CUdevice_opaque *dev){
 	char devn[strlen(DEVROOT) + 4];
+	uint32_t *map;
 	typed0 td0;
-	void *map;
 	off_t off;
 	int dfd;
 
@@ -121,6 +122,8 @@ init_dev(unsigned dno,CUdevice_opaque *dev){
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	dev->arch = ((map[0] >> 20u) & 0xffu);
+	debug("Architecture: %u\n",dev->arch);
 	td0.ob[0] = 3251636241;
 	td0.ob[1] = 3251636241;
 	td0.ob[2] = 1;
