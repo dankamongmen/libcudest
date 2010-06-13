@@ -20,6 +20,8 @@
 
 #define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
 
+#define debug(s,...) fprintf(stderr,"%s:%d] "s,__func__,__LINE__,__VA_ARGS__)
+
 typedef struct CUdevice_opaque {
 	int valid;
 	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
@@ -87,7 +89,7 @@ static type6 t6;
 static thirdtype t3;
 static fourthtype t4;
 static type5 t5,ta,t7;
-static nv_ioctl_env_info_t pat_supported;
+static nv_ioctl_env_info_t envinfo;
 
 static CUresult
 init_dev(unsigned dno,CUdevice_opaque *dev,off_t regaddr){
@@ -136,6 +138,7 @@ init_dev(unsigned dno,CUdevice_opaque *dev,off_t regaddr){
 // For now, maxcds must equal MAX_CARDS FIXME
 static int
 get_card_info(int fd,int *count,nv_ioctl_card_info_t *cds,unsigned maxcds){
+	debug("Probing for up to %u cards\n",maxcds);
 	*count = 0;
 	memset(cds,0xff,maxcds / CHAR_BIT); // FIXME how does mask work?
 	if(ioctl(fd,NV_CARDINFO,cds)){
@@ -145,6 +148,7 @@ get_card_info(int fd,int *count,nv_ioctl_card_info_t *cds,unsigned maxcds){
 	while(maxcds--){
 		if(cds[maxcds].flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
 			++*count;
+			debug("Found a device (%u total), ID #%u\n",*count,maxcds);
 		}
 	}
 	printf("Found %d cards\n",*count);
@@ -193,11 +197,12 @@ init_ctlfd(int fd,const char *ver){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
 	printf("Verified version %s\n",ver);
-	memset(&pat_supported,0,sizeof(pat_supported));
-	if(ioctl(fd,NV_ENVINFO,&pat_supported)){
+	memset(&envinfo,0,sizeof(envinfo));
+	if(ioctl(fd,NV_ENVINFO,&envinfo)){
 		fprintf(stderr,"Error checking PATs on fd %d (%s)\n",fd,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	debug("PAT support: %s\n",envinfo.pat_supported ? "yes" : "no");
 	if(get_card_info(fd,&cardcount,t3.descs,MAX_CARDS)){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
