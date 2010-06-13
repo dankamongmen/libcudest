@@ -23,7 +23,6 @@
 #define debug(s,...) fprintf(stderr,"%s:%d] "s,__func__,__LINE__,__VA_ARGS__)
 
 typedef struct CUdevice_opaque {
-	int valid;
 	size_t regsize,fbsize;
 	uintmax_t regaddr,fbaddr;
 	unsigned flags;
@@ -171,40 +170,37 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 	}
 	while(maxcds--){
 		if(cds[maxcds].flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
+			CUdevice_opaque *d;
 			const char *bus;
 
+			d = &devs[(*count)++];
+			d->irq = cds[maxcds].interrupt_line;
+			d->regaddr = cds[maxcds].reg_address;
+			d->fbaddr = cds[maxcds].fb_address;
+			d->regsize = cds[maxcds].reg_size;
+			d->fbsize = cds[maxcds].fb_size;
+			d->pcidomain = cds[maxcds].domain;
+			d->busnumber = cds[maxcds].bus;
+			d->flags = cds[maxcds].flags;
+			d->slot = cds[maxcds].slot;
+			d->vendorid = cds[maxcds].vendor_id;
+			d->deviceid = cds[maxcds].device_id;
 			debug("Found a device (%u total), ID #%u (IRQ %u)\n",
-					*count,maxcds,devs[maxcds].irq);
-			devs[maxcds].regaddr = cds[maxcds].reg_address;
-			devs[maxcds].fbaddr = cds[maxcds].fb_address;
-			devs[maxcds].irq = cds[maxcds].interrupt_line;
-			devs[maxcds].regsize = cds[maxcds].reg_size;
-			devs[maxcds].fbsize = cds[maxcds].fb_size;
-			devs[maxcds].pcidomain = cds[maxcds].domain;
-			devs[maxcds].busnumber = cds[maxcds].bus;
-			devs[maxcds].flags = cds[maxcds].flags;
-			devs[maxcds].slot = cds[maxcds].slot;
-			devs[maxcds].vendorid = cds[maxcds].vendor_id;
-			devs[maxcds].deviceid = cds[maxcds].device_id;
-			devs[maxcds].valid = 1;
-			++*count;
-			if((bus = busname(devs[maxcds].busnumber)) == NULL){
-				fprintf(stderr,"Warning: unknown bus type %u (assuming PCIe)\n",
-						devs[maxcds].busnumber);
-				devs[maxcds].busnumber = NV_IOCTL_CARD_INFO_BUS_TYPE_PCI_EXPRESS;
-				debug("Domain: %u Slot: %u\n",
-				 devs[maxcds].pcidomain,devs[maxcds].slot);
+					*count,maxcds,d->irq);
+			if((bus = busname(d->busnumber)) == NULL){
+				fprintf(stderr,"Warning: unknown bus type %u\n",
+						d->busnumber);
+				debug("Domain: %u Slot: %u Bus: unknown\n",
+					d->pcidomain,devs[maxcds].slot);
 			}else{
-				debug("Bus: %s Domain: %u Slot: %u\n",bus,
-				 devs[maxcds].pcidomain,devs[maxcds].slot);
+				debug("Domain: %u Slot: %u Bus: %s\n",
+					d->pcidomain,devs[maxcds].slot,bus);
 			}
-			debug("Found a device (%u total), ID #%u (IRQ %u)\n",
-					*count,maxcds,devs[maxcds].irq);
 			debug("Vendor ID: 0x%04x Device ID: 0x%04x\n",
-				devs[maxcds].vendorid,devs[maxcds].deviceid);
-			debug("Flags: 0x%04x\n",devs[maxcds].flags);
+				d->vendorid,devs[maxcds].deviceid);
+			debug("Flags: 0x%04x\n",d->flags);
 			debug("Framebuffer: 0x%zx @ 0x%jx\n",
-					devs[maxcds].fbsize,devs[maxcds].fbaddr);
+					d->fbsize,devs[maxcds].fbaddr);
 		}
 	}
 	printf("Found %d cards\n",*count);
@@ -304,12 +300,9 @@ init_ctlfd(int fd,const char *ver){
 	if(ioctl(fd,NV_IA,&ta)){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	for(z = 0 ; z < cardcount ; ++z){ // FIXME what if non-contiguous?
+	for(z = 0 ; z < cardcount ; ++z){
 		CUdevice_opaque *dev = &devs[z];
 
-		if(!dev->valid){
-			continue;
-		}
 		if((r = init_dev(z,dev)) != CUDA_SUCCESS){
 			return r;
 		}
