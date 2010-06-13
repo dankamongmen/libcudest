@@ -24,8 +24,8 @@
 
 typedef struct CUdevice_opaque {
 	int valid;
-	size_t regsize;
-	uintmax_t regaddr;
+	size_t regsize,fbsize;
+	uintmax_t regaddr,fbaddr;
 	unsigned flags;
 	unsigned irq;
 	unsigned vendorid,deviceid,gpuid;
@@ -105,10 +105,10 @@ init_dev(unsigned dno,CUdevice_opaque *dev){
 	off_t off;
 	int dfd;
 
-	debug("Device #%u register base: %zub @ 0x%jx\n",dno,dev->regsize,dev->regaddr);
+	debug("Device #%u register base: 0x%zxb @ 0x%jx\n",dno,dev->regsize,dev->regaddr);
 	memset(dev->attrs,0,sizeof(dev->attrs));
 	off = dev->regaddr + REGS_PMC;
-	debug("Device #%u PMC: %zub @ 0x%jx\n",dno,REGLEN_PMC,off);
+	debug("Device #%u PMC: 0x%zxb @ 0x%jx\n",dno,REGLEN_PMC,off);
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
@@ -174,12 +174,16 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 			const char *bus;
 
 			devs[maxcds].regaddr = cds[maxcds].reg_address;
+			devs[maxcds].fbaddr = cds[maxcds].fb_address;
 			devs[maxcds].irq = cds[maxcds].interrupt_line;
 			devs[maxcds].regsize = cds[maxcds].reg_size;
+			devs[maxcds].fbsize = cds[maxcds].fb_size;
 			devs[maxcds].pcidomain = cds[maxcds].domain;
 			devs[maxcds].busnumber = cds[maxcds].bus;
 			devs[maxcds].flags = cds[maxcds].flags;
 			devs[maxcds].slot = cds[maxcds].slot;
+			devs[maxcds].vendorid = cds[maxcds].vendor_id;
+			devs[maxcds].deviceid = cds[maxcds].device_id;
 			devs[maxcds].valid = 1;
 			++*count;
 			if((bus = busname(devs[maxcds].busnumber)) == NULL){
@@ -188,9 +192,13 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 			}
 			debug("Found a device (%u total), ID #%u (IRQ %u)\n",
 					*count,maxcds,devs[maxcds].irq);
-			debug("Flags: 0x%x\n",devs[maxcds].flags);
+			debug("Vendor ID: 0x%04x Device ID: 0x%04x\n",
+				devs[maxcds].vendorid,devs[maxcds].deviceid);
+			debug("Flags: 0x%04x\n",devs[maxcds].flags);
 			debug("Bus: %s Domain: %u Slot: %u\n",bus,
 				devs[maxcds].pcidomain,devs[maxcds].slot);
+			debug("Framebuffer: 0x%zx @ 0x%jx\n",
+					devs[maxcds].fbsize,devs[maxcds].fbaddr);
 		}
 	}
 	printf("Found %d cards\n",*count);
