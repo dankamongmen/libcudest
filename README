@@ -1,0 +1,5 @@
+Q: This thing doesn't build.
+A: You'll need an NVIDIA kernel driver unpacked somewhere (run the
+    distribution binary with the -x option). There ought be a source
+    directory within (usually called 'kernel' or 'nv'). Define NVSRC to
+    that path.
