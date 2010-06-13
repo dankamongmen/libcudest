@@ -18,7 +18,7 @@ TAGS:=.tags
 
 # FIXME, obviously
 #NVSRC?=$(HOME)/NVIDIA-Linux-x86_64-195.36.24-pkg2/usr/src/nv
-NVSRC?=$(HOME)/NVIDIA-Linux-x86_64-256.22/kernel
+NVSRC?=$(HOME)/NVIDIA-Linux-x86_64-256.29/kernel
 
 CC?=gcc
 IFLAGS:=-Isrc -I$(NVSRC)
