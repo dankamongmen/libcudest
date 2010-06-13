@@ -24,6 +24,12 @@
 
 typedef struct CUdevice_opaque {
 	int valid;
+	size_t regsize;
+	uintmax_t regaddr;
+	unsigned flags;
+	unsigned irq;
+	unsigned vendorid,deviceid,gpuid;
+	unsigned pcidomain,busnumber,slot;
 	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
 } CUdevice_opaque;
 
@@ -92,15 +98,17 @@ static type5 t5,ta,t7;
 static nv_ioctl_env_info_t envinfo;
 
 static CUresult
-init_dev(unsigned dno,CUdevice_opaque *dev,off_t regaddr){
+init_dev(unsigned dno,CUdevice_opaque *dev){
 	char devn[strlen(DEVROOT) + 4];
 	typed0 td0;
 	void *map;
 	off_t off;
 	int dfd;
 
+	debug("Device #%u register base: %zub @ 0x%jx\n",dno,dev->regsize,dev->regaddr);
 	memset(dev->attrs,0,sizeof(dev->attrs));
-	off = regaddr + REGS_PMC;
+	off = dev->regaddr + REGS_PMC;
+	debug("Device #%u PMC: %zub @ 0x%jx\n",dno,REGLEN_PMC,off);
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
@@ -108,6 +116,7 @@ init_dev(unsigned dno,CUdevice_opaque *dev,off_t regaddr){
 		fprintf(stderr,"Couldn't open %s (%s)\n",devn,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	debug("Device #%u handle (%s) at fd %d\n",dno,devn,dfd);
 	if((map = mmap(NULL,REGLEN_PMC,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
 		fprintf(stderr,"Couldn't map PMC (%s); check dmesg\n",strerror(errno));
 		close(dfd);
@@ -135,9 +144,24 @@ init_dev(unsigned dno,CUdevice_opaque *dev,off_t regaddr){
 	return CUDA_SUCCESS;
 }
 
+static const char *
+busname(unsigned bustype){
+	switch(bustype){
+	case NV_IOCTL_CARD_INFO_BUS_TYPE_PCI:
+		return "PCI";
+	case NV_IOCTL_CARD_INFO_BUS_TYPE_AGP:
+		return "AGP";
+	case NV_IOCTL_CARD_INFO_BUS_TYPE_PCI_EXPRESS:
+		return "PCIe";
+	default:
+		return NULL;
+	}
+}
+
 // For now, maxcds must equal MAX_CARDS FIXME
 static int
-get_card_info(int fd,int *count,nv_ioctl_card_info_t *cds,unsigned maxcds){
+get_card_count(int fd,int *count,CUdevice_opaque *devs,
+		nv_ioctl_card_info_t *cds,unsigned maxcds){
 	debug("Probing for up to %u cards\n",maxcds);
 	*count = 0;
 	memset(cds,0xff,maxcds / CHAR_BIT); // FIXME how does mask work?
@@ -147,8 +171,26 @@ get_card_info(int fd,int *count,nv_ioctl_card_info_t *cds,unsigned maxcds){
 	}
 	while(maxcds--){
 		if(cds[maxcds].flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
+			const char *bus;
+
+			devs[maxcds].regaddr = cds[maxcds].reg_address;
+			devs[maxcds].irq = cds[maxcds].interrupt_line;
+			devs[maxcds].regsize = cds[maxcds].reg_size;
+			devs[maxcds].pcidomain = cds[maxcds].domain;
+			devs[maxcds].busnumber = cds[maxcds].bus;
+			devs[maxcds].flags = cds[maxcds].flags;
+			devs[maxcds].slot = cds[maxcds].slot;
+			devs[maxcds].valid = 1;
 			++*count;
-			debug("Found a device (%u total), ID #%u\n",*count,maxcds);
+			if((bus = busname(devs[maxcds].busnumber)) == NULL){
+				fprintf(stderr,"Unknown bus type: %u\n",devs[maxcds].busnumber);
+				return -1;
+			}
+			debug("Found a device (%u total), ID #%u (IRQ %u)\n",
+					*count,maxcds,devs[maxcds].irq);
+			debug("Flags: 0x%x\n",devs[maxcds].flags);
+			debug("Bus: %s Domain: %u Slot: %u\n",bus,
+				devs[maxcds].pcidomain,devs[maxcds].slot);
 		}
 	}
 	printf("Found %d cards\n",*count);
@@ -159,6 +201,7 @@ static int
 convert_version(uint32_t *ob3,const char *verstr){
 	unsigned z;
 
+	debug("Expecting version '%s'\n",verstr);
 	for(z = 0 ; z < 3 ; ++z){
 		unsigned y,shl = 1;
 
@@ -203,7 +246,7 @@ init_ctlfd(int fd,const char *ver){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	debug("PAT support: %s\n",envinfo.pat_supported ? "yes" : "no");
-	if(get_card_info(fd,&cardcount,t3.descs,MAX_CARDS)){
+	if(get_card_count(fd,&cardcount,devs,t3.descs,sizeof(devs) / sizeof(*devs))){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	/*
@@ -249,14 +292,12 @@ init_ctlfd(int fd,const char *ver){
 	}
 	for(z = 0 ; z < cardcount ; ++z){ // FIXME what if non-contiguous?
 		CUdevice_opaque *dev = &devs[z];
-		const nv_ioctl_card_info_t *cd;
 
-		cd = &t3.descs[z];
-		dev->valid = cd->flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT;
-		if(dev->valid){
-			if((r = init_dev(z,dev,cd->reg_address)) != CUDA_SUCCESS){
-				return r;
-			}
+		if(!dev->valid){
+			continue;
+		}
+		if((r = init_dev(z,dev)) != CUDA_SUCCESS){
+			return r;
 		}
 	}
 	if(ioctl(fd,NV_FIFTH,&t5)){
@@ -291,11 +332,13 @@ CUresult cuInit(unsigned flags){
 		fprintf(stderr,"Couldn't open %s (%s)\n",NVCTLDEV,strerror(errno));
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	debug("CTL handle (%s) at fd %d\n",NVCTLDEV,fd);
 	if((r = init_ctlfd(fd,CUDARUNVER)) != CUDA_SUCCESS){
 		close(fd);
 		return r;
 	}
 	if(nvctl >= 0){
+		debug("Resetting old nvctl (%d) to new (%d)\n",nvctl,fd);
 		close(nvctl);
 	}
 	nvctl = fd;
