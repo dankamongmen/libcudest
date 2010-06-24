@@ -12,8 +12,8 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
-// 195.36.15, 195.36.24, 256.22
-#define CUDARUNVER	"256.29"
+// 195.36.15, 195.36.24, 256.22, 256.29
+#define CUDARUNVER	"256.35"
 
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
@@ -123,7 +123,8 @@ init_dev(unsigned dno,CUdevice_opaque *dev){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	dev->arch = ((map[0] >> 20u) & 0xffu);
-	debug("Architecture: %u\n",dev->arch);
+	// http://nouveau.freedesktop.org/wiki/CodeNames
+	debug("Architecture: NV%2X\n",dev->arch);
 	td0.ob[0] = 3251636241;
 	td0.ob[1] = 3251636241;
 	td0.ob[2] = 1;
