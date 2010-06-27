@@ -101,17 +101,33 @@ static type5 t5,ta,t7;
 static nv_ioctl_env_info_t envinfo;
 
 static int
-create_ctldev(const char *devpath){
-	char fp[PATH_MAX];
+create_ctldev(const char *fp){
 	mode_t mode,oldmask;
 	dev_t dev;
 
 	mode = NVCTLDEV_MODE;
 	dev = makedev(NVCTLDEV_MAJOR,NVCTLDEV_MINOR);
-	if(snprintf(fp,sizeof(fp),"%s/%s",devpath,NVCTLDEV) >= (int)sizeof(fp)){
-		fprintf(stderr,"Bad device name: %s/%s\n",devpath,NVCTLDEV);
+	oldmask = umask(0);
+	if(mknod(fp,mode,dev)){
+		umask(oldmask);
+		fprintf(stderr,"Couldn't create %s (%s)\n",fp,strerror(errno));
 		return -1;
 	}
+	umask(oldmask);
+	return 0;
+}
+
+static int
+create_carddev(const char *fp,unsigned z){
+	mode_t mode,oldmask;
+	dev_t dev;
+
+	if(z >= MAX_CARDS){
+		fprintf(stderr,"Only up through %u cards are supported\n",MAX_CARDS);
+		return -1;
+	}
+	mode = NVCTLDEV_MODE;
+	dev = makedev(NVCTLDEV_MAJOR,z);
 	oldmask = umask(0);
 	if(mknod(fp,mode,dev)){
 		umask(oldmask);
@@ -138,8 +154,18 @@ init_dev(unsigned dno,CUdevice_opaque *dev){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
 	if((dfd = open(devn,O_RDWR)) < 0){
-		fprintf(stderr,"Couldn't open %s (%s)\n",devn,strerror(errno));
-		return CUDA_ERROR_INVALID_DEVICE;
+		if(errno == ENOENT){
+			if(create_carddev(devn,dno)){
+				return CUDA_ERROR_INVALID_DEVICE;
+			}
+			if((dfd = open(devn,O_RDWR)) < 0){
+				fprintf(stderr,"Couldn't open %s (%s)\n",devn,strerror(errno));
+				return CUDA_ERROR_INVALID_DEVICE;
+			}
+		}else{
+			fprintf(stderr,"Couldn't open %s (%s)\n",devn,strerror(errno));
+			return CUDA_ERROR_INVALID_DEVICE;
+		}
 	}
 	debug("Device #%u handle (%s) at fd %d\n",dno,devn,dfd);
 	if((map = mmap(NULL,REGLEN_PMC,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
@@ -365,10 +391,15 @@ CUresult cuInit(unsigned flags){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
 	if((fd = open(NVCTLDEV,O_RDWR)) < 0){
-		if(create_ctldev("/")){
-			return CUDA_ERROR_INVALID_DEVICE;
-		}
-		if((fd = open(NVCTLDEV,O_RDWR)) < 0){
+		if(errno == ENOENT){
+		       	if(create_ctldev("/") == 0){
+				return CUDA_ERROR_INVALID_DEVICE;
+			}
+			if((fd = open(NVCTLDEV,O_RDWR)) < 0){
+				fprintf(stderr,"Couldn't open %s (%s)\n",NVCTLDEV,strerror(errno));
+				return CUDA_ERROR_INVALID_DEVICE;
+			}
+		}else{
 			fprintf(stderr,"Couldn't open %s (%s)\n",NVCTLDEV,strerror(errno));
 			return CUDA_ERROR_INVALID_DEVICE;
 		}
