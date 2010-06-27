@@ -17,6 +17,9 @@
 
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
+#define NVCTLDEV_MODE (S_IFCHR | (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH))
+#define NVCTLDEV_MAJOR 195
+#define NVCTLDEV_MINOR 255
 
 #define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
 
@@ -96,6 +99,28 @@ static thirdtype t3;
 static fourthtype t4;
 static type5 t5,ta,t7;
 static nv_ioctl_env_info_t envinfo;
+
+static int
+create_ctldev(const char *devpath){
+	char fp[PATH_MAX];
+	mode_t mode,oldmask;
+	dev_t dev;
+
+	mode = NVCTLDEV_MODE;
+	dev = makedev(NVCTLDEV_MAJOR,NVCTLDEV_MINOR);
+	if(snprintf(fp,sizeof(fp),"%s/%s",devpath,NVCTLDEV) >= (int)sizeof(fp)){
+		fprintf(stderr,"Bad device name: %s/%s\n",devpath,NVCTLDEV);
+		return -1;
+	}
+	oldmask = umask(0);
+	if(mknod(fp,mode,dev)){
+		umask(oldmask);
+		fprintf(stderr,"Couldn't create %s (%s)\n",fp,strerror(errno));
+		return -1;
+	}
+	umask(oldmask);
+	return 0;
+}
 
 static CUresult
 init_dev(unsigned dno,CUdevice_opaque *dev){
@@ -340,8 +365,13 @@ CUresult cuInit(unsigned flags){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
 	if((fd = open(NVCTLDEV,O_RDWR)) < 0){
-		fprintf(stderr,"Couldn't open %s (%s)\n",NVCTLDEV,strerror(errno));
-		return CUDA_ERROR_INVALID_DEVICE;
+		if(create_ctldev("/")){
+			return CUDA_ERROR_INVALID_DEVICE;
+		}
+		if((fd = open(NVCTLDEV,O_RDWR)) < 0){
+			fprintf(stderr,"Couldn't open %s (%s)\n",NVCTLDEV,strerror(errno));
+			return CUDA_ERROR_INVALID_DEVICE;
+		}
 	}
 	debug("CTL handle (%s) at fd %d\n",NVCTLDEV,fd);
 	if((r = init_ctlfd(fd,CUDARUNVER)) != CUDA_SUCCESS){
