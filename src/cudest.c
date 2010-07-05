@@ -146,7 +146,7 @@ init_dev(unsigned dno,CUdevice_opaque *dev){
 	off_t off;
 	int dfd;
 
-	debug("Device #%u register base: 0x%zxb @ 0x%jx\n",dno,dev->regsize,dev->regaddr);
+	debug("Device #%u register base: 0x%08zxb @ 0x%08jx\n",dno,dev->regsize,dev->regaddr);
 	memset(dev->attrs,0,sizeof(dev->attrs));
 	off = dev->regaddr + REGS_PMC;
 	debug("Device #%u PMC: 0x%zxb @ 0x%jx\n",dno,REGLEN_PMC,off);
