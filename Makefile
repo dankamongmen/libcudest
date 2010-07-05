@@ -4,7 +4,6 @@
 
 OUT:=out
 INC:=$(wildcard src/*.h)
-TEXOBJS:=$(wildcard texobjs/*)
 SRC:=$(notdir $(wildcard src/*.c))
 SHIMSRC:=$(notdir $(wildcard shim/*.c))
 OBJ:=$(addsuffix .o,$(addprefix $(OUT)/,$(basename $(SRC))))
@@ -62,13 +61,6 @@ $(OUT)/%.o: shim/%.c $(INC) $(TAGS)
 $(OUT)/%.o: src/%.c $(INC) $(TAGS)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
-
-%.pdf: %.tex %.bib $(TEXOBJS) $(MAKEFILES)
-	@[ -d $(@D) ] || mkdir -p $(@D)
-	pdflatex $<
-	bibtex $(basename $<)
-	pdflatex $<
-	pdflatex $<
 
 test: all $(BIN)
 	./$(OUT)/cudadevices
