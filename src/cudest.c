@@ -205,15 +205,13 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	dev->arch = ((map[0] >> 20u) & 0xffu);
 	dev->stepping = map[0] & 0xffu;
 	// http://nouveau.freedesktop.org/wiki/CodeNames
-	debug("Architecture: NV%2X %2X\n",dev->arch,dev->stepping);
+	debug("Architecture: G%2X %2X\n",dev->arch,dev->stepping);
 	memset(name,0,sizeof(name));
-	printf("%x %x %x %x\n",name[0],name[4],name[8],name[12]);
 	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
 		munmap(map,REGLEN_PMC);
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	printf("%x %x %x %x\n",name[0],name[4],name[8],name[12]);
 	strncpy(dev->name,name + 4,sizeof(dev->name));
 	td0.ob[0] = 3251636241;
 	td0.ob[1] = 3251636241;
