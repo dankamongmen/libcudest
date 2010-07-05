@@ -146,14 +146,12 @@ create_carddev(const char *fp,unsigned z){
 
 static int
 invokegpu(int ctlfd,uint32_t fam,uint32_t meth,void *v,size_t vlen){
-	uint64_t addr;
 	gpuinvoke gpu;
 
 	memset(&gpu,0,sizeof(gpu));
 	gpu.fam = fam;
 	gpu.meth = meth;
-	addr = (uint64_t)v;
-	gpu.addr = (addr >> 32) | (addr << 32);
+	gpu.addr = (uint64_t)v;
 	gpu.len = vlen;
 	if(ioctl(ctlfd,NV_GPUINVOKE,&gpu)){
 		fprintf(stderr,"Error invoking GPU on fd %d (%s)\n",ctlfd,strerror(errno));
