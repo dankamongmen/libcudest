@@ -34,6 +34,7 @@ typedef struct CUdevice_opaque {
 	unsigned vendorid,deviceid,gpuid;
 	unsigned pcidomain,busnumber,slot;
 	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
+	char *name;
 } CUdevice_opaque;
 
 static CUdevice_opaque devs[MAX_CARDS];
@@ -50,7 +51,7 @@ typedef enum {
 	NV_ENVINFO	= 0xc0044600 + NV_ESC_ENV_INFO,
 	NV_CARDINFO	= 0xc6004600 + NV_ESC_CARD_INFO,
 	NV_FOURTH	= 0xc00c4622,
-	NV_FIFTH	= 0xc020462a,
+	NV_GPUINVOKE	= 0xc020462a,
 	NV_I6		= 0xc048464d,
 	NV_I7		= 0xc014462d,
 	NV_IA		= 0xc020462b,
@@ -94,10 +95,7 @@ typedef struct typed0 {
 	uint32_t ob[8];		// 0x20 (32) bytes
 } typed0;
 
-static type6 t6;
 static thirdtype t3;
-static fourthtype t4;
-static type5 t5,ta,t7;
 static nv_ioctl_env_info_t envinfo;
 
 static int
@@ -314,71 +312,12 @@ init_ctlfd(int fd,const char *ver){
 	if(get_card_count(fd,&cardcount,devs,t3.descs,sizeof(devs) / sizeof(*devs))){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	/*
-	if(ioctl(fd,NV_FOURTH,&t4)){
-		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_FOURTH,fd,strerror(errno));
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	*/
-	t5.ob[0] = t4.ob[0];
-	t5.ob[1] = t4.ob[0];
-	t5.ob[2] = 0x215u;
-	t5.ob[4] = 0xcf43fd00u;
-	t5.ob[5] = 0x00007fffu;
-	t5.ob[6] = 0x84u;
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	t6.ob[0] = t4.ob[0];
-	t6.ob[1] = t4.ob[0];
-	t6.ob[2] = 0x1u;
-	t6.ob[8] = 0xa14b1233u;
-	t6.ob[9] = 0x00007feeu;
-	t6.ob[10] = 0xfu;
-	if(ioctl(fd,NV_I6,&t6)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	t5.ob[2] = 0x215u;
-	t5.ob[3] = 0x0;
-	t5.ob[6] = 0x80u;
-	t5.ob[7] = 0x0;
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	t5.ob[4] = 0xcf43fac0;
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	if(ioctl(fd,NV_IA,&ta)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
 	for(z = 0 ; z < cardcount ; ++z){
 		CUdevice_opaque *dev = &devs[z];
 
 		if((r = init_dev(z,dev)) != CUDA_SUCCESS){
 			return r;
 		}
-	}
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	if(ioctl(fd,NV_I7,&t7)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	if(ioctl(fd,NV_FIFTH,&t5)){
-		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	return CUDA_SUCCESS;
 }
@@ -436,4 +375,15 @@ CUresult cuDeviceGetAttribute(int *attr,CUdevice_attribute spec,CUdevice dev){
 	}
 	*attr = dev->attrs[spec];
 	return CUDA_SUCCESS;
+}
+
+CUresult cuDeviceGetName(char *buf,int bufsz,CUdevice c){
+	if(!c->name){
+		return CUDA_ERROR_NOT_INITIALIZED;
+	}
+	if(bufsz <= 0){
+		return CUDA_ERROR_INVALID_VALUE;
+	}
+	strncpy(buf,c->name,bufsz);
+	return CUDA_SUCCESS; // FIXME error on buf too small?
 }
