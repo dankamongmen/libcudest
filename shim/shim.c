@@ -81,7 +81,7 @@ dump_mem(const uint32_t *dat,size_t s){
 	for(z = 0 ; z < s ; z += 4){
 		printf("\x1b[1m");
 		if(z % 16 == 0 && z){
-			printf("0x%04x\t\t\t\t",z);
+			printf("0x%04zx\t\t\t\t",z);
 		}
 		if(dat[z / 4]){
 			printf("\x1b[32m");
@@ -105,7 +105,7 @@ decode_gpucall_pre(const uint32_t *dat,size_t s,size_t *ps){
 	}
 	printf("GPU method 0x%08x:%08x\t",dat[1],dat[2]);
 	*ps = ((uint64_t)dat[7] << 32) + dat[6];
-	dump_mem(((uint64_t)dat[5] << 32) + dat[4],*ps);
+	dump_mem((uint32_t *)(((uint64_t)dat[5] << 32) + dat[4]),*ps);
 }
 
 static void
@@ -118,14 +118,14 @@ decode_gpucall_post(const uint32_t *dat,size_t s,size_t ps){
 		printf("\x1b[1m\x1b[44mLENGTH MODIFIED BY CALL!\t(ret: 0x%x)\x1b[0m\n",dat[7]);
 	}
 	printf("GPU method 0x%08x:%08x\t",dat[1],dat[2]);
-	dump_mem(((uint64_t)dat[5] << 32) + dat[4],ps);
+	dump_mem((uint32_t *)(((uint64_t)dat[5] << 32) + dat[4]),ps);
 }
 
 int ioctl(int fd,int req,uintptr_t op){//,unsigned o1,unsigned o2){
 	static int (*shim_ioctl)(int,int,uintptr_t,int,int);
 	static int (*shim_ioctl3)(int,int,uintptr_t);
 	const uint32_t *dat = (const uint32_t *)op;
-	size_t *gpus;
+	size_t gpus;
 	int r,s;
 
 	if(shim_ioctl == NULL){
