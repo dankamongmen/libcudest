@@ -162,13 +162,12 @@ int ioctl(int fd,int req,uintptr_t op){//,unsigned o1,unsigned o2){
 	}
 
 	r = shim_ioctl3(fd,req,op);
-	printf("\x1b[1m\x1b[34mRESULT: %d\x1b[0m\t\t\t",r);
+	printf("\x1b[1m\x1b[34mRESULT: %d\x1b[0m%s",r,r ? "\n" : "\t\t\t");
 	if(r == 0){
 		dump_mem(dat,s);
-	}
-
-	if((req & 0xffu) == 0x2a){
-		decode_gpucall_post(dat,s,gpus);
+		if((req & 0xffu) == 0x2a){
+			decode_gpucall_post(dat,s,gpus);
+		}
 	}
 
 	printf("\n");
