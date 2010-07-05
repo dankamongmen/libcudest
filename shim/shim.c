@@ -114,10 +114,10 @@ decode_gpucall_post(const uint32_t *dat,size_t s,size_t ps){
 		fprintf(stderr,"Invalid argument for GPU invocation (%zub)\n",s);
 		return;
 	}
-	printf("GPU method 0x%08x:%08x\t",dat[1],dat[2]);
 	if(ps != ((uint64_t)dat[7] << 32) + dat[6]){
-		printf("**************MODIFICATION FROM CALL\n");
+		printf("\x1b[1m\x1b[44mLENGTH MODIFIED BY CALL!\t(ret: 0x%x)\x1b[0m\n",dat[7]);
 	}
+	printf("GPU method 0x%08x:%08x\t",dat[1],dat[2]);
 	dump_mem(((uint64_t)dat[5] << 32) + dat[4],ps);
 }
 
