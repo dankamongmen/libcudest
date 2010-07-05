@@ -11,10 +11,11 @@ usage(const char *argv){
 }
 
 int main(int argc,char **argv){
-	int count/*,devno = 0*/;
+	int count,devno;
 	//CUdeviceptr p;
 	CUresult cerr;
-	//CUdevice c;
+	char str[80];
+	CUdevice c;
 
 	if(argc > 1){
 		usage(*argv);
@@ -33,14 +34,21 @@ int main(int argc,char **argv){
 		exit(EXIT_FAILURE);
 	}
 	printf("We have %d device%s.\n",count,count == 1 ? "" : "s");
-	/*
-	if( (cerr = cuMemAlloc(&p,sizeof(p))) ){
-		fprintf(stderr,"Couldn't allocate %zub (%d)\n",sizeof(p),cerr);
-		exit(EXIT_FAILURE);
+	for(devno = 0 ; devno < count ; ++devno){
+		if( (cerr = cuDeviceGet(&c,devno)) ){
+			fprintf(stderr,"Couldn't reference device %d (%d)\n",devno,cerr);
+			exit(EXIT_FAILURE);
+		}
+		if( (cerr = cuDeviceGetName(str,sizeof(str),c)) ){
+			fprintf(stderr,"Error determining device name (%d)\n",cerr);
+			exit(EXIT_FAILURE);
+		}
+		printf("Device %d: %s\n",devno,str);
+		/*
+		if( (cerr = cuMemAlloc(&p,sizeof(p))) ){
+			fprintf(stderr,"Couldn't allocate %zub (%d)\n",sizeof(p),cerr);
+			exit(EXIT_FAILURE);
+		}*/
 	}
-	if( (cerr = cuDeviceGet(&c,devno)) ){
-		fprintf(stderr,"Couldn't reference device %d (%d)\n",devno,cerr);
-		exit(EXIT_FAILURE);
-	}*/
 	exit(EXIT_SUCCESS);
 }
