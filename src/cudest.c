@@ -20,6 +20,7 @@
 #define NVCTLDEV_MODE (S_IFCHR | (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH))
 #define NVCTLDEV_MAJOR 195
 #define NVCTLDEV_MINOR 255
+#define NVNAMEMAX 0x84		// from the "get name" GPU method paramlen
 
 #define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
 
@@ -29,12 +30,13 @@ typedef struct CUdevice_opaque {
 	size_t regsize,fbsize;
 	uintmax_t regaddr,fbaddr;
 	unsigned arch;
+	unsigned stepping;
 	unsigned flags;
 	unsigned irq;
 	unsigned vendorid,deviceid,gpuid;
 	unsigned pcidomain,busnumber,slot;
 	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
-	char *name;
+	char name[NVNAMEMAX];
 } CUdevice_opaque;
 
 static CUdevice_opaque devs[MAX_CARDS];
@@ -79,9 +81,15 @@ typedef struct fourthtype {
 	uint32_t ob[3];		// 0xc (12) bytes
 } fourthtype;
 
-typedef struct type5 {
-	uint32_t ob[8];		// 0x20 (32) bytes
-} type5;
+typedef struct gpuinvoke {	// 0x20 (32) bytes
+	uint32_t obj;
+	uint32_t fam;
+	uint32_t meth;
+	uint32_t ob;		// zero out
+	uint64_t addr;
+	uint32_t len;
+	uint32_t ret;		// zero out on input
+} gpuinvoke;
 
 typedef struct typeb {
 	uint32_t ob[12];	// 0x30 (48) bytes
@@ -136,9 +144,32 @@ create_carddev(const char *fp,unsigned z){
 	return 0;
 }
 
+static int
+invokegpu(int ctlfd,uint32_t fam,uint32_t meth,void *v,size_t vlen){
+	uint64_t addr;
+	gpuinvoke gpu;
+
+	memset(&gpu,0,sizeof(gpu));
+	gpu.fam = fam;
+	gpu.meth = meth;
+	addr = (uint64_t)v;
+	gpu.addr = (addr >> 32) | (addr << 32);
+	gpu.len = vlen;
+	if(ioctl(ctlfd,NV_GPUINVOKE,&gpu)){
+		fprintf(stderr,"Error invoking GPU on fd %d (%s)\n",ctlfd,strerror(errno));
+		return -1;
+	}
+	if(gpu.ret){
+		fprintf(stderr,"GPU returned error %u on fd %d\n",gpu.ret,ctlfd);
+		return -1;
+	}
+	return 0;
+}
+
 static CUresult
-init_dev(unsigned dno,CUdevice_opaque *dev){
+init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	char devn[strlen(DEVROOT) + 4];
+	char name[NVNAMEMAX];
 	uint32_t *map;
 	typed0 td0;
 	off_t off;
@@ -172,8 +203,18 @@ init_dev(unsigned dno,CUdevice_opaque *dev){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	dev->arch = ((map[0] >> 20u) & 0xffu);
+	dev->stepping = map[0] & 0xffu;
 	// http://nouveau.freedesktop.org/wiki/CodeNames
-	debug("Architecture: NV%2X\n",dev->arch);
+	debug("Architecture: NV%2X %2X\n",dev->arch,dev->stepping);
+	memset(name,0,sizeof(name));
+	printf("%x %x %x %x\n",name[0],name[4],name[8],name[12]);
+	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
+		munmap(map,REGLEN_PMC);
+		close(dfd);
+		return CUDA_ERROR_INVALID_DEVICE;
+	}
+	printf("%x %x %x %x\n",name[0],name[4],name[8],name[12]);
+	strncpy(dev->name,name + 4,sizeof(dev->name));
 	td0.ob[0] = 3251636241;
 	td0.ob[1] = 3251636241;
 	td0.ob[2] = 1;
@@ -315,7 +356,7 @@ init_ctlfd(int fd,const char *ver){
 	for(z = 0 ; z < cardcount ; ++z){
 		CUdevice_opaque *dev = &devs[z];
 
-		if((r = init_dev(z,dev)) != CUDA_SUCCESS){
+		if((r = init_dev(fd,z,dev)) != CUDA_SUCCESS){
 			return r;
 		}
 	}
@@ -378,7 +419,7 @@ CUresult cuDeviceGetAttribute(int *attr,CUdevice_attribute spec,CUdevice dev){
 }
 
 CUresult cuDeviceGetName(char *buf,int bufsz,CUdevice c){
-	if(!c->name){
+	if(!c->name[0]){
 		return CUDA_ERROR_NOT_INITIALIZED;
 	}
 	if(bufsz <= 0){
