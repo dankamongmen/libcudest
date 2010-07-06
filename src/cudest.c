@@ -21,8 +21,6 @@
 #define NV_CONTROL_DEVICE_MINOR 255
 #define NVNAMEMAX 0x84		// from the "get name" GPU method paramlen
 
-#define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
-
 #define debug(s,...) fprintf(stderr,"%s:%d] "s,__func__,__LINE__,__VA_ARGS__)
 
 typedef struct CUdevice_opaque {
@@ -38,7 +36,7 @@ typedef struct CUdevice_opaque {
 	char name[NVNAMEMAX];
 } CUdevice_opaque;
 
-static CUdevice_opaque devs[MAX_CARDS];
+static CUdevice_opaque devs[NV_MAX_DEVICES];
 
 // http://nouveau.freedesktop.org/wiki/HwIntroduction
 #define REGS_PMC	((off_t)0x0000)
@@ -73,7 +71,7 @@ typedef struct nvhandshake {
 
 static int cardcount;
 typedef struct {
-	nv_ioctl_card_info_t descs[MAX_CARDS];
+	nv_ioctl_card_info_t descs[NV_MAX_DEVICES];
 } thirdtype;
 
 typedef struct fourthtype {
@@ -127,8 +125,8 @@ create_carddev(const char *fp,unsigned z){
 	mode_t mode,oldmask;
 	dev_t dev;
 
-	if(z >= MAX_CARDS){
-		fprintf(stderr,"Only up through %u cards are supported\n",MAX_CARDS);
+	if(z >= NV_MAX_DEVICES){
+		fprintf(stderr,"Only up through %u cards are supported\n",NV_MAX_DEVICES);
 		return -1;
 	}
 	mode = NVCTLDEV_MODE;
@@ -246,7 +244,7 @@ busname(unsigned bustype){
 	}
 }
 
-// For now, maxcds must equal MAX_CARDS FIXME
+// For now, maxcds must equal NV_MAX_CARDS FIXME
 static int
 get_card_count(int fd,int *count,CUdevice_opaque *devs,
 		nv_ioctl_card_info_t *cds,unsigned maxcds){
