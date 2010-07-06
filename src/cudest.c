@@ -27,7 +27,7 @@ typedef struct CUdevice_opaque {
 	size_t regsize,fbsize;
 	uintmax_t regaddr,fbaddr;
 	unsigned arch;
-	unsigned stepping;
+	unsigned revision;
 	unsigned flags;
 	unsigned irq;
 	unsigned vendorid,deviceid,gpuid;
@@ -198,9 +198,9 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	dev->arch = ((map[0] >> 20u) & 0xffu);
-	dev->stepping = map[0] & 0xffu;
+	dev->revision = map[0] & 0xffu;
 	// http://nouveau.freedesktop.org/wiki/CodeNames
-	debug("Architecture: G%2X %2X\n",dev->arch,dev->stepping);
+	debug("Architecture: G%2X Revision: %2X\n",dev->arch,dev->revision);
 	memset(name,0,sizeof(name));
 	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
 		munmap(map,REGLEN_PMC);
