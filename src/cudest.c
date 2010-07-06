@@ -18,8 +18,7 @@
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
 #define NVCTLDEV_MODE (S_IFCHR | (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH))
-#define NVCTLDEV_MAJOR 195
-#define NVCTLDEV_MINOR 255
+#define NV_CONTROL_DEVICE_MINOR 255
 #define NVNAMEMAX 0x84		// from the "get name" GPU method paramlen
 
 #define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
@@ -112,7 +111,7 @@ create_ctldev(const char *fp){
 	dev_t dev;
 
 	mode = NVCTLDEV_MODE;
-	dev = makedev(NVCTLDEV_MAJOR,NVCTLDEV_MINOR);
+	dev = makedev(NV_MAJOR_DEVICE_NUMBER,NV_CONTROL_DEVICE_MINOR);
 	oldmask = umask(0);
 	if(mknod(fp,mode,dev)){
 		umask(oldmask);
@@ -133,7 +132,7 @@ create_carddev(const char *fp,unsigned z){
 		return -1;
 	}
 	mode = NVCTLDEV_MODE;
-	dev = makedev(NVCTLDEV_MAJOR,z);
+	dev = makedev(NV_MAJOR_DEVICE_NUMBER,z);
 	oldmask = umask(0);
 	if(mknod(fp,mode,dev)){
 		umask(oldmask);
