@@ -15,9 +15,7 @@ LIB:=$(OUT)/libcudest.so $(OUT)/shim.so
 TAGBIN:=ctags
 TAGS:=.tags
 
-# FIXME, obviously
-#NVSRC?=$(HOME)/NVIDIA-Linux-x86_64-195.36.24-pkg2/usr/src/nv
-NVSRC?=$(HOME)/NVIDIA-Linux-x86_64-256.35/kernel
+NVSRC?=nv/current
 
 CC?=gcc
 IFLAGS:=-Isrc -I$(NVSRC)
