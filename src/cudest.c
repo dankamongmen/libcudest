@@ -18,11 +18,8 @@
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
 #define NVCTLDEV_MODE (S_IFCHR | (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH))
-#define NVCTLDEV_MAJOR 195
-#define NVCTLDEV_MINOR 255
+#define NV_CONTROL_DEVICE_MINOR 255
 #define NVNAMEMAX 0x84		// from the "get name" GPU method paramlen
-
-#define MAX_CARDS 32 // FIXME pull from nv somehow? upstream constant
 
 #define debug(s,...) fprintf(stderr,"%s:%d] "s,__func__,__LINE__,__VA_ARGS__)
 
@@ -30,7 +27,7 @@ typedef struct CUdevice_opaque {
 	size_t regsize,fbsize;
 	uintmax_t regaddr,fbaddr;
 	unsigned arch;
-	unsigned stepping;
+	unsigned revision;
 	unsigned flags;
 	unsigned irq;
 	unsigned vendorid,deviceid,gpuid;
@@ -39,7 +36,7 @@ typedef struct CUdevice_opaque {
 	char name[NVNAMEMAX];
 } CUdevice_opaque;
 
-static CUdevice_opaque devs[MAX_CARDS];
+static CUdevice_opaque devs[NV_MAX_DEVICES];
 
 // http://nouveau.freedesktop.org/wiki/HwIntroduction
 #define REGS_PMC	((off_t)0x0000)
@@ -74,7 +71,7 @@ typedef struct nvhandshake {
 
 static int cardcount;
 typedef struct {
-	nv_ioctl_card_info_t descs[MAX_CARDS];
+	nv_ioctl_card_info_t descs[NV_MAX_DEVICES];
 } thirdtype;
 
 typedef struct fourthtype {
@@ -112,7 +109,7 @@ create_ctldev(const char *fp){
 	dev_t dev;
 
 	mode = NVCTLDEV_MODE;
-	dev = makedev(NVCTLDEV_MAJOR,NVCTLDEV_MINOR);
+	dev = makedev(NV_MAJOR_DEVICE_NUMBER,NV_CONTROL_DEVICE_MINOR);
 	oldmask = umask(0);
 	if(mknod(fp,mode,dev)){
 		umask(oldmask);
@@ -128,12 +125,12 @@ create_carddev(const char *fp,unsigned z){
 	mode_t mode,oldmask;
 	dev_t dev;
 
-	if(z >= MAX_CARDS){
-		fprintf(stderr,"Only up through %u cards are supported\n",MAX_CARDS);
+	if(z >= NV_MAX_DEVICES){
+		fprintf(stderr,"Only up through %u cards are supported\n",NV_MAX_DEVICES);
 		return -1;
 	}
 	mode = NVCTLDEV_MODE;
-	dev = makedev(NVCTLDEV_MAJOR,z);
+	dev = makedev(NV_MAJOR_DEVICE_NUMBER,z);
 	oldmask = umask(0);
 	if(mknod(fp,mode,dev)){
 		umask(oldmask);
@@ -201,9 +198,9 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	dev->arch = ((map[0] >> 20u) & 0xffu);
-	dev->stepping = map[0] & 0xffu;
+	dev->revision = map[0] & 0xffu;
 	// http://nouveau.freedesktop.org/wiki/CodeNames
-	debug("Architecture: G%2X %2X\n",dev->arch,dev->stepping);
+	debug("Architecture: G%2X Revision: %2X\n",dev->arch,dev->revision);
 	memset(name,0,sizeof(name));
 	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
 		munmap(map,REGLEN_PMC);
@@ -247,7 +244,7 @@ busname(unsigned bustype){
 	}
 }
 
-// For now, maxcds must equal MAX_CARDS FIXME
+// For now, maxcds must equal NV_MAX_CARDS FIXME
 static int
 get_card_count(int fd,int *count,CUdevice_opaque *devs,
 		nv_ioctl_card_info_t *cds,unsigned maxcds){
