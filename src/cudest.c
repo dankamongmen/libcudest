@@ -270,7 +270,7 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 					d->regsize,d->regaddr);
 		}
 	}
-	printf("Found %d cards\n",*count);
+	printf("Found %d card%s\n",*count,*count == 1 ? "" : "s");
 	return 0;
 }
 
