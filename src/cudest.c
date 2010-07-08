@@ -171,7 +171,6 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	off_t off;
 	int dfd;
 
-	debug("Device #%u register base: 0x%08zxb @ 0x%08jx\n",dno,dev->regsize,dev->regaddr);
 	memset(dev->attrs,0,sizeof(dev->attrs));
 	off = dev->regaddr + REGS_PMC;
 	debug("Device #%u PMC: 0x%zxb @ 0x%jx\n",dno,REGLEN_PMC,off);
@@ -285,6 +284,8 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 			debug("Flags: 0x%04x\n",d->flags);
 			debug("Framebuffer: 0x%zx @ 0x%jx\n",
 					d->fbsize,devs[maxcds].fbaddr);
+			debug("Register base: 0x%08zxb @ 0x%08jx\n",
+					d->regsize,d->regaddr);
 		}
 	}
 	printf("Found %d cards\n",*count);
