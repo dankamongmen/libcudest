@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <endian.h>
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
@@ -275,7 +276,8 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 			d->vendorid = cds[maxcds].vendor_id;
 			d->deviceid = cds[maxcds].device_id;
 			debug("Found device %u ID #%u (IRQ %u)\n",
-					*count,cds[maxcds].gpu_id,d->irq);
+					*count,be16toh(cds[maxcds].gpu_id),
+					d->irq);
 			debug("Domain: %u Bus: %u Slot: %u\n",
 				d->pcidomain,devs[maxcds].bus,devs[maxcds].slot);
 			debug("Vendor ID: 0x%04x Device ID: 0x%04x\n",
