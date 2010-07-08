@@ -30,8 +30,8 @@ typedef struct CUdevice_opaque {
 	unsigned revision;
 	unsigned flags;
 	unsigned irq;
+	unsigned pcidomain,bus,slot;
 	unsigned vendorid,deviceid,gpuid;
-	unsigned pcidomain,busnumber,slot;
 	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
 	char name[NVNAMEMAX];
 } CUdevice_opaque;
@@ -231,6 +231,9 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 }
 
 static const char *
+busname(unsigned bustype) __attribute__ ((unused));
+
+static const char *
 busname(unsigned bustype){
 	switch(bustype){
 	case NV_IOCTL_CARD_INFO_BUS_TYPE_PCI:
@@ -258,7 +261,6 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 	while(maxcds--){
 		if(cds[maxcds].flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
 			CUdevice_opaque *d;
-			const char *bus;
 
 			d = &devs[(*count)++];
 			d->irq = cds[maxcds].interrupt_line;
@@ -267,22 +269,15 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 			d->regsize = cds[maxcds].reg_size;
 			d->fbsize = cds[maxcds].fb_size;
 			d->pcidomain = cds[maxcds].domain;
-			d->busnumber = cds[maxcds].bus;
+			d->bus = cds[maxcds].bus;
 			d->flags = cds[maxcds].flags;
 			d->slot = cds[maxcds].slot;
 			d->vendorid = cds[maxcds].vendor_id;
 			d->deviceid = cds[maxcds].device_id;
-			debug("Found a device (%u total), ID #%u (IRQ %u)\n",
-					*count,maxcds,d->irq);
-			if((bus = busname(d->busnumber)) == NULL){
-				fprintf(stderr,"Warning: unknown bus type %u\n",
-						d->busnumber);
-				debug("Domain: %u Slot: %u Bus: unknown\n",
-					d->pcidomain,devs[maxcds].slot);
-			}else{
-				debug("Domain: %u Slot: %u Bus: %s\n",
-					d->pcidomain,devs[maxcds].slot,bus);
-			}
+			debug("Found device %u ID #%u (IRQ %u)\n",
+					*count,cds[maxcds].gpu_id,d->irq);
+			debug("Domain: %u Bus: %u Slot: %u\n",
+				d->pcidomain,devs[maxcds].bus,devs[maxcds].slot);
 			debug("Vendor ID: 0x%04x Device ID: 0x%04x\n",
 				d->vendorid,devs[maxcds].deviceid);
 			debug("Flags: 0x%04x\n",d->flags);

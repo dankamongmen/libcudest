@@ -25,7 +25,7 @@ BIN:=$(OUT)/cudactx $(OUT)/cudactx-base $(OUT)/cudadevices $(OUT)/cudaminimal $(
 
 all: $(LIB) $(BIN)
 
-$(TAGS): $(addprefix src/,$(SRC)) $(addprefix shim/,$(SHIMSRC)) $(INC)
+$(TAGS): $(addprefix src/,$(SRC)) $(addprefix shim/,$(SHIMSRC)) $(INC) $(wildcard $(NVSRC)/*.h)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	$(TAGBIN) -f $@ $^
 
