@@ -1,6 +1,6 @@
 .DELETE_ON_ERROR:
 .PHONY: all test clean
-.DEFAULT_GOAL:=test
+.DEFAULT_GOAL:=all
 
 OUT:=out
 INC:=$(wildcard src/*.h)
