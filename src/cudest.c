@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <endian.h>
 #include <limits.h>
 #include <string.h>
 #include <unistd.h>
@@ -195,9 +194,13 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	// Architecture, revision, and stepping are in PMC_BOOT_0
 	dev->arch = ((map[0] >> 20u) & 0xffu);
 	// http://nouveau.freedesktop.org/wiki/CodeNames
-	debug("Architecture: G%2X\n",dev->arch);
+	debug("Architecture: G%2X Stepping: %2X\t(%08x)\n",dev->arch,map[0] & 0xffu,map[0]);
+	// http://nouveau.freedesktop.org/wiki/HwIntroduction
+	debug("Endianness: %s-endian\t\t(%08x)\n",map[1] ? "big" : "little",map[1]);
+	debug("PRAMIN maps physaddr: %x\t(%08x)\n",map[1472] << 16u,map[1472]);
 	memset(name,0,sizeof(name));
 	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
 		munmap(map,REGLEN_PMC);
@@ -256,9 +259,7 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 			d->slot = cds[z].slot;
 			d->vendorid = cds[z].vendor_id;
 			d->deviceid = cds[z].device_id;
-			debug("Found device %u ID #%u (IRQ %u)\n",
-					*count,be16toh(cds[z].gpu_id),
-					d->irq);
+			debug("Found device %u (IRQ %u)\n",*count,d->irq);
 			debug("Domain: %u Bus: %u Slot: %u\n",
 				d->pcidomain,devs[z].bus,devs[z].slot);
 			debug("Vendor ID: 0x%04x Device ID: 0x%04x\n",
