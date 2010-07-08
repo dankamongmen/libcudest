@@ -349,14 +349,16 @@ init_ctlfd(int fd,const char *ver){
 	if(get_card_count(fd,&cardcount,devs,t3.descs,sizeof(devs) / sizeof(*devs))){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	r = CUDA_SUCCESS;
 	for(z = 0 ; z < cardcount ; ++z){
 		CUdevice_opaque *dev = &devs[z];
+		CUresult rr;
 
-		if((r = init_dev(fd,z,dev)) != CUDA_SUCCESS){
-			return r;
+		if((rr = init_dev(fd,z,dev)) != CUDA_SUCCESS){
+			r = rr;
 		}
 	}
-	return CUDA_SUCCESS;
+	return r;
 }
 
 CUresult cuInit(unsigned flags){
