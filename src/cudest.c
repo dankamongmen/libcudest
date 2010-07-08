@@ -251,6 +251,8 @@ busname(unsigned bustype){
 static int
 get_card_count(int fd,int *count,CUdevice_opaque *devs,
 		nv_ioctl_card_info_t *cds,unsigned maxcds){
+	unsigned z;
+
 	debug("Probing for up to %u cards\n",maxcds);
 	*count = 0;
 	memset(cds,0xff,maxcds / CHAR_BIT); // FIXME how does mask work?
@@ -258,32 +260,32 @@ get_card_count(int fd,int *count,CUdevice_opaque *devs,
 		fprintf(stderr,"Error getting card info on fd %d (%s)\n",fd,strerror(errno));
 		return -1;
 	}
-	while(maxcds--){
-		if(cds[maxcds].flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
+	for(z = 0 ; z < maxcds ; ++z){
+		if(cds[z].flags & NV_IOCTL_CARD_INFO_FLAG_PRESENT){
 			CUdevice_opaque *d;
 
 			d = &devs[(*count)++];
-			d->irq = cds[maxcds].interrupt_line;
-			d->regaddr = cds[maxcds].reg_address;
-			d->fbaddr = cds[maxcds].fb_address;
-			d->regsize = cds[maxcds].reg_size;
-			d->fbsize = cds[maxcds].fb_size;
-			d->pcidomain = cds[maxcds].domain;
-			d->bus = cds[maxcds].bus;
-			d->flags = cds[maxcds].flags;
-			d->slot = cds[maxcds].slot;
-			d->vendorid = cds[maxcds].vendor_id;
-			d->deviceid = cds[maxcds].device_id;
+			d->irq = cds[z].interrupt_line;
+			d->regaddr = cds[z].reg_address;
+			d->fbaddr = cds[z].fb_address;
+			d->regsize = cds[z].reg_size;
+			d->fbsize = cds[z].fb_size;
+			d->pcidomain = cds[z].domain;
+			d->bus = cds[z].bus;
+			d->flags = cds[z].flags;
+			d->slot = cds[z].slot;
+			d->vendorid = cds[z].vendor_id;
+			d->deviceid = cds[z].device_id;
 			debug("Found device %u ID #%u (IRQ %u)\n",
-					*count,be16toh(cds[maxcds].gpu_id),
+					*count,be16toh(cds[z].gpu_id),
 					d->irq);
 			debug("Domain: %u Bus: %u Slot: %u\n",
-				d->pcidomain,devs[maxcds].bus,devs[maxcds].slot);
+				d->pcidomain,devs[z].bus,devs[z].slot);
 			debug("Vendor ID: 0x%04x Device ID: 0x%04x\n",
-				d->vendorid,devs[maxcds].deviceid);
+				d->vendorid,devs[z].deviceid);
 			debug("Flags: 0x%04x\n",d->flags);
 			debug("Framebuffer: 0x%zx @ 0x%jx\n",
-					d->fbsize,devs[maxcds].fbaddr);
+					d->fbsize,devs[z].fbaddr);
 			debug("Register base: 0x%08zxb @ 0x%08jx\n",
 					d->regsize,d->regaddr);
 		}
