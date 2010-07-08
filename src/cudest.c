@@ -199,6 +199,7 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	}
 	dev->arch = ((map[0] >> 20u) & 0xffu);
 	dev->revision = map[0] & 0xffu;
+	printf("ARCHWORD: %08x\n",map[0]);
 	// http://nouveau.freedesktop.org/wiki/CodeNames
 	debug("Architecture: G%2X Revision: %2X\n",dev->arch,dev->revision);
 	memset(name,0,sizeof(name));
