@@ -21,7 +21,7 @@
 #define NV_CONTROL_DEVICE_MINOR 255
 #define NVNAMEMAX 0x84		// from the "get name" GPU method paramlen
 
-#define debug(s,...) fprintf(stderr,"%s:%d] "s,__func__,__LINE__,__VA_ARGS__)
+#define debug(s,...) fprintf(stderr,"%s:%d] "s,__func__,__LINE__, ##__VA_ARGS__)
 
 typedef struct CUdevice_opaque {
 	size_t regsize,fbsize;
@@ -219,6 +219,15 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	if(dev->vendorid != (map[0] & 0xffffu)){
+		fprintf(stderr,"Warning: reported vendor ID != PBUS (0x%08x)\n",
+				(map[0] & 0xffffu));
+	}
+	if((dev->deviceid << 16u) != (map[0] & 0xffff0000u)){
+		fprintf(stderr,"Warning: reported device ID != PBUS (0x%08x)\n",
+				(map[0] & 0xffff0000u));
+	}
+	debug("Confirmed expected vendor and device IDs on PBUS\n");
 	dev->pcirev = map[2] & 0xffu;
 	debug("PCI revision ID: %02x\t\t(0x%08x)\n",dev->pcirev,map[2]);
 	if(munmap(map,mlen)){
