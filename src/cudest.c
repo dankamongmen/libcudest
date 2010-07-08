@@ -28,7 +28,6 @@ typedef struct CUdevice_opaque {
 	size_t regsize,fbsize;
 	uintmax_t regaddr,fbaddr;
 	unsigned arch;
-	unsigned revision;
 	unsigned flags;
 	unsigned irq;
 	unsigned pcidomain,bus,slot;
@@ -167,7 +166,6 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	char devn[strlen(DEVROOT) + 4];
 	char name[NVNAMEMAX];
 	uint32_t *map;
-	typed0 td0;
 	off_t off;
 	int dfd;
 
@@ -198,9 +196,8 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	dev->arch = ((map[0] >> 20u) & 0xffu);
-	dev->revision = map[0] & 0xfu;
 	// http://nouveau.freedesktop.org/wiki/CodeNames
-	debug("Architecture: G%2X (revision a%1x)\n",dev->arch,dev->revision);
+	debug("Architecture: G%2X\n",dev->arch);
 	memset(name,0,sizeof(name));
 	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
 		munmap(map,REGLEN_PMC);
@@ -208,23 +205,6 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	strncpy(dev->name,name + 4,sizeof(dev->name));
-	td0.ob[0] = 3251636241;
-	td0.ob[1] = 3251636241;
-	td0.ob[2] = 1;
-	td0.ob[3] = 0;
-	td0.ob[4] = 0;
-	if(ioctl(dfd,NV_D0,&td0)){
-		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_D0,dfd,strerror(errno));
-		munmap(map,REGLEN_PMC);
-		close(dfd);
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
-	if(ioctl(dfd,NV_D0,&td0)){
-		fprintf(stderr,"Error sending ioctl 0x%x to fd %d (%s)\n",NV_D0,dfd,strerror(errno));
-		munmap(map,REGLEN_PMC);
-		close(dfd);
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
 	munmap(map,REGLEN_PMC);
 	close(dfd);
 	return CUDA_SUCCESS;
