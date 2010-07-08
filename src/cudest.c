@@ -367,7 +367,7 @@ CUresult cuInit(unsigned flags){
 	}
 	if((fd = open(NVCTLDEV,O_RDWR)) < 0){
 		if(errno == ENOENT){
-		       	if(create_ctldev("/") == 0){
+		       	if(create_ctldev(NVCTLDEV) == 0){
 				return CUDA_ERROR_INVALID_DEVICE;
 			}
 			if((fd = open(NVCTLDEV,O_RDWR)) < 0){
