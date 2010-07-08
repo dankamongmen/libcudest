@@ -30,7 +30,7 @@ typedef struct CUdevice_opaque {
 	unsigned flags;
 	unsigned irq;
 	unsigned pcidomain,bus,slot;
-	unsigned vendorid,deviceid,gpuid;
+	unsigned vendorid,deviceid,gpuid,pcirev;
 	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
 	char name[NVNAMEMAX];
 } CUdevice_opaque;
@@ -38,10 +38,12 @@ typedef struct CUdevice_opaque {
 static CUdevice_opaque devs[NV_MAX_DEVICES];
 
 // http://nouveau.freedesktop.org/wiki/HwIntroduction
-#define REGS_PMC	((off_t)0x0000)
-#define REGLEN_PMC	((size_t)0x2000)
-#define REGS_PTIMER	((off_t)0x9000)
-#define REGLEN_PTIMER	((size_t)0x1000)
+#define BAR0_PMC	((off_t)0x0)
+#define BAR0_PMC_LEN	((size_t)0x2000)
+#define BAR0_PBUS	((off_t)0x88000)
+#define BAR0_PBUS_LEN	((size_t)0x1000)
+#define BAR0_PTIMER	((off_t)0x9000)
+#define BAR0_PTIMER_LEN	((size_t)0x1000)
 
 // Reverse-engineered from strace and binary analysis.
 typedef enum {
@@ -165,12 +167,14 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	char devn[strlen(DEVROOT) + 4];
 	char name[NVNAMEMAX];
 	uint32_t *map;
+	size_t mlen;
 	off_t off;
 	int dfd;
 
 	memset(dev->attrs,0,sizeof(dev->attrs));
-	off = dev->regaddr + REGS_PMC;
-	debug("Device #%u PMC: 0x%zxb @ 0x%jx\n",dno,REGLEN_PMC,off);
+	off = dev->regaddr + BAR0_PMC;
+	mlen = BAR0_PMC_LEN;
+	debug("Device #%u PMC: 0x%zxb @ 0x%jx\n",dno,mlen,off);
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
@@ -189,27 +193,46 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		}
 	}
 	debug("Device #%u handle (%s) at fd %d\n",dno,devn,dfd);
-	if((map = mmap(NULL,REGLEN_PMC,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
+	if((map = mmap(NULL,mlen,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
 		fprintf(stderr,"Couldn't map PMC (%s); check dmesg\n",strerror(errno));
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	// Architecture, revision, and stepping are in PMC_BOOT_0
+	// Architecture and stepping are in PMC_BOOT_0
 	dev->arch = ((map[0] >> 20u) & 0xffu);
 	// http://nouveau.freedesktop.org/wiki/CodeNames
-	debug("Architecture: G%2X Stepping: %2X\t(%08x)\n",dev->arch,map[0] & 0xffu,map[0]);
+	debug("Architecture: G%2X Stepping: %2X\t(0x%08x)\n",dev->arch,map[0] & 0xffu,map[0]);
 	// http://nouveau.freedesktop.org/wiki/HwIntroduction
-	debug("Endianness: %s-endian\t\t(%08x)\n",map[1] ? "big" : "little",map[1]);
-	debug("PRAMIN maps physaddr: %x\t(%08x)\n",map[1472] << 16u,map[1472]);
-	memset(name,0,sizeof(name));
-	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
-		munmap(map,REGLEN_PMC);
+	debug("Endianness: %s-endian\t\t(0x%08x)\n",map[1] ? "big" : "little",map[1]);
+	debug("PRAMIN maps physaddr: %x\t(0x%08x)\n",map[1472] << 16u,map[1472]);
+	debug("PMC_ENABLE: 0x%08x\n",map[128]);
+	debug("MPS_ENABLE: 0x%08x\n",map[1360]);
+	if(munmap(map,mlen)){
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	mlen = BAR0_PBUS_LEN;
+	off = dev->regaddr + BAR0_PBUS;
+	debug("Device #%u PBUS: 0x%zxb @ 0x%jx\n",dno,mlen,off);
+	if((map = mmap(NULL,mlen,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
+		fprintf(stderr,"Couldn't map PBUS (%s); check dmesg\n",strerror(errno));
+		close(dfd);
+		return CUDA_ERROR_INVALID_DEVICE;
+	}
+	dev->pcirev = map[2] & 0xffu;
+	debug("PCI revision ID: %02x\t\t(0x%08x)\n",dev->pcirev,map[2]);
+	if(munmap(map,mlen)){
+		close(dfd);
+		return CUDA_ERROR_INVALID_DEVICE;
+	}
+	memset(name,0,sizeof(name));
+	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
+		return CUDA_ERROR_INVALID_DEVICE;
+	}
 	strncpy(dev->name,name + 4,sizeof(dev->name));
-	munmap(map,REGLEN_PMC);
-	close(dfd);
+	if(close(dfd)){
+		return CUDA_ERROR_INVALID_DEVICE;
+	}
 	return CUDA_SUCCESS;
 }
 
