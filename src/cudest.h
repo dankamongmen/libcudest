@@ -7,9 +7,9 @@ extern "C" {
 
 #include <pthread.h>
 
-// Taken from 3.0's cuda.h
+// Taken from 3.0's cuda.h, updated for 3.1
 
-#define CUDA_VERSION 3000 /* 3.0 */
+#define CUDA_VERSION 3010 /* 3.1 */
 
 typedef enum cudaError_enum {
     CUDA_SUCCESS                    = 0,        ///< No errors
@@ -96,7 +96,9 @@ typedef enum CUdevice_attribute_enum {
     CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_ARRAY_NUMSLICES = 29, ///< Maximum slices in a texture array
     CU_DEVICE_ATTRIBUTE_SURFACE_ALIGNMENT = 30, ///< Alignment requirement for surfaces
     CU_DEVICE_ATTRIBUTE_CONCURRENT_KERNELS = 31, ///< Device can possibly execute multiple kernels concurrently
-    CU_DEVICE_ATTRIBUTE_ECC_ENABLED = 32 ///< Device has ECC support enabled
+    CU_DEVICE_ATTRIBUTE_ECC_ENABLED = 32, ///< Device has ECC support enabled
+    CU_DEVICE_ATTRIBUTE_PCI_BUS_ID = 33, ////< PCI bus ID of the device
+    CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID = 34, ////< PCI device ID of the device
 } CUdevice_attribute;
 
 #ifdef _WIN32
