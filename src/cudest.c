@@ -31,7 +31,7 @@ typedef struct CUdevice_opaque {
 	unsigned irq;
 	unsigned pcidomain,bus,slot;
 	unsigned vendorid,deviceid,gpuid,pcirev;
-	int attrs[CU_DEVICE_ATTRIBUTE_ECC_ENABLED + 1];
+	int attrs[CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID + 1];
 	char name[NVNAMEMAX];
 } CUdevice_opaque;
 
@@ -52,9 +52,9 @@ typedef enum {
 	NV_CARDINFO	= 0xc6004600 + NV_ESC_CARD_INFO,
 	NV_FOURTH	= 0xc00c4622,
 	NV_GPUINVOKE	= 0xc020462a,
+	NV_GPUOBJ	= 0xc020462b,
 	NV_I6		= 0xc048464d,
 	NV_I7		= 0xc014462d,
-	NV_IA		= 0xc020462b,
 	NV_IB		= 0xc030464e,
 } nvioctls;
 
@@ -67,17 +67,17 @@ typedef enum {
 static int nvctl = -1;
 
 typedef struct nvhandshake {
-	uint32_t ob[18];	// 0x48 bytes
+	uint32_t ob[18];	// 0x48 (72) bytes
 } nvhandshake;
 
-static int cardcount;
-typedef struct {
-	nv_ioctl_card_info_t descs[NV_MAX_DEVICES];
-} thirdtype;
+typedef struct gpuobject {
+	uint32_t ob[15];	// 0x3C (60) bytes
+} gpuobject;
 
-typedef struct fourthtype {
-	uint32_t ob[3];		// 0xc (12) bytes
-} fourthtype;
+static int cardcount;
+typedef struct nvcardinfo {
+	nv_ioctl_card_info_t descs[NV_MAX_DEVICES];
+} nvcardinfo;
 
 typedef struct gpuinvoke {	// 0x20 (32) bytes
 	uint32_t obj;
@@ -89,19 +89,7 @@ typedef struct gpuinvoke {	// 0x20 (32) bytes
 	uint32_t ret;		// zero out on input
 } gpuinvoke;
 
-typedef struct typeb {
-	uint32_t ob[12];	// 0x30 (48) bytes
-} typeb;
-
-typedef struct type6 {
-	uint32_t ob[18];	// 0x30 (72) bytes
-} type6;
-
-typedef struct typed0 {
-	uint32_t ob[8];		// 0x20 (32) bytes
-} typed0;
-
-static thirdtype t3;
+static nvcardinfo t3;
 static nv_ioctl_env_info_t envinfo;
 
 static int
@@ -166,6 +154,7 @@ static CUresult
 init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	char devn[strlen(DEVROOT) + 4];
 	char name[NVNAMEMAX];
+	gpuobject context;
 	uint32_t *map;
 	size_t mlen;
 	off_t off;
@@ -234,14 +223,24 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
+	if(close(dfd)){
+		return CUDA_ERROR_INVALID_DEVICE;
+	}
+
+	memset(&context,0,sizeof(context));
+	context.ob[4] = 0x006127e0;
+	if(ioctl(ctlfd,NV_GPUOBJ,&context)){
+		fprintf(stderr,"Couldn't create GPU object (%s)\n",strerror(errno));
+		return CUDA_ERROR_OUT_OF_MEMORY;
+	}
+	printf("Got a context\n");
+	// FIXME need a context
+
 	memset(name,0,sizeof(name));
 	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 	strncpy(dev->name,name + 4,sizeof(dev->name));
-	if(close(dfd)){
-		return CUDA_ERROR_INVALID_DEVICE;
-	}
 	return CUDA_SUCCESS;
 }
 
