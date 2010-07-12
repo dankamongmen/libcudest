@@ -218,7 +218,8 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	}
 	debug("Confirmed expected vendor and device IDs on PBUS\n");
 	dev->pcirev = map[2] & 0xffu;
-	debug("PCI revision ID: %02x\t\t(0x%08x)\n",dev->pcirev,map[2]);
+	debug("PCI rev: %02x      class: %02x.%02x\t(0x%08x)\n",dev->pcirev,
+		((map[2] & 0xff000000u) >> 24u),((map[2] & 0x00ff0000u) >> 16u),map[2]);
 	if(munmap(map,mlen)){
 		close(dfd);
 		return CUDA_ERROR_INVALID_DEVICE;
