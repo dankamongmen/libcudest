@@ -63,6 +63,12 @@ typedef enum {
 	NV_D1		= 0xc0144632,
 } nvdevioctls;
 
+// GPU objects, prepared via the NV_GPUOBJ ioctl -------------------------
+typedef struct gpucontext {
+	uint32_t ob[14];	// 0x38 (56) bytes
+} gpucontext;
+// -----------------------------------------------------------------------
+
 // FIXME we'll almost certainly need a rwlock protecting this
 static int nvctl = -1;
 
@@ -154,7 +160,8 @@ static CUresult
 init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	char devn[strlen(DEVROOT) + 4];
 	char name[NVNAMEMAX];
-	gpuobject context;
+	gpuobject contextreq;
+	gpucontext *context;
 	uint32_t *map;
 	size_t mlen;
 	off_t off;
@@ -228,15 +235,26 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
 
-	memset(&context,0,sizeof(context));
-	context.ob[4] = 0x006127e0;
-	if(ioctl(ctlfd,NV_GPUOBJ,&context)){
+	if((context = malloc(sizeof(*context))) == NULL){
+		fprintf(stderr,"Couldn't create GPU context (%s)\n",strerror(errno));
+		return CUDA_ERROR_OUT_OF_MEMORY;
+	}
+	memset(&contextreq,0,sizeof(contextreq));
+	//  FIXME
+	((uint64_t *)contextreq.ob)[2] = (uint64_t)context;
+	if(ioctl(ctlfd,NV_GPUOBJ,&contextreq)){
 		fprintf(stderr,"Couldn't create GPU object (%s)\n",strerror(errno));
+		free(context);
+		return CUDA_ERROR_OUT_OF_MEMORY;
+	}
+	if(((uint64_t *)contextreq.ob)[3]){
+		fprintf(stderr,"GPU returned error on context creation\n");
+		free(context);
 		return CUDA_ERROR_OUT_OF_MEMORY;
 	}
 	printf("Got a context\n");
-	// FIXME need a context
 
+	// FIXME need a context
 	memset(name,0,sizeof(name));
 	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
 		return CUDA_ERROR_INVALID_DEVICE;
