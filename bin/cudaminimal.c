@@ -10,6 +10,22 @@ usage(const char *argv){
 	fprintf(stderr,"usage: %s\n",argv);
 }
 
+static int
+get_all_attributes(CUdevice c){
+	int attr,n;
+
+	for(n = 0 ; n < CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID ; ++n){
+		CUresult cerr;
+
+		if( (cerr = cuDeviceGetAttribute(&attr,n,c)) ){
+			fprintf(stderr,"Error acquiring device attr %d (%d)\n",n,cerr);
+			return -1;
+		}
+		printf("Device attribute %d: %d\n",n,attr);
+	}
+	return 0;
+}
+
 int main(int argc,char **argv){
 	int count,devno;
 	//CUdeviceptr p;
@@ -37,6 +53,9 @@ int main(int argc,char **argv){
 	for(devno = 0 ; devno < count ; ++devno){
 		if( (cerr = cuDeviceGet(&c,devno)) ){
 			fprintf(stderr,"Couldn't reference device %d (%d)\n",devno,cerr);
+			exit(EXIT_FAILURE);
+		}
+		if(get_all_attributes(c)){
 			exit(EXIT_FAILURE);
 		}
 		if( (cerr = cuDeviceGetName(str,sizeof(str),c)) ){
