@@ -223,6 +223,7 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 				(map[0] & 0xffff0000u));
 	}
 	debug("Confirmed expected vendor and device IDs on PBUS\n");
+	dev->attrs[CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID] = dev->deviceid;
 	dev->pcirev = map[2] & 0xffu;
 	debug("PCI rev: %02x      class: %02x.%02x\t(0x%08x)\n",dev->pcirev,
 		((map[2] & 0xff000000u) >> 24u),((map[2] & 0x00ff0000u) >> 16u),map[2]);

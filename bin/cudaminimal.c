@@ -14,7 +14,7 @@ static int
 get_all_attributes(CUdevice c){
 	int attr,n;
 
-	for(n = 0 ; n < CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID ; ++n){
+	for(n = 0 ; n <= CU_DEVICE_ATTRIBUTE_ECC_ENABLED ; ++n){
 		CUresult cerr;
 
 		if( (cerr = cuDeviceGetAttribute(&attr,n,c)) ){
@@ -22,6 +22,16 @@ get_all_attributes(CUdevice c){
 			return -1;
 		}
 		printf("Device attribute %d: %d\n",n,attr);
+	}
+	while(n <= CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID){
+		CUresult cerr;
+
+		if( (cerr = cuDeviceGetAttribute(&attr,n,c)) ){
+			fprintf(stderr,"Error acquiring device attr %d (%d)\n",n,cerr);
+			return -1;
+		}
+		printf("Device attribute %d: 0x%04x\n",n,attr);
+		++n;
 	}
 	return 0;
 }
