@@ -1,11 +1,35 @@
 #include <stdio.h>
 #include <errno.h>
 #include <dlfcn.h>
+#include <unistd.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdint.h>
 #include <sys/mman.h>
 #include <sys/types.h>
+
+// This'll at least allow ANSI coloring, etc
+typedef struct {
+	const char *boldon;
+	const char *normal;
+} ui;
+
+static const ui ansi_ui = {
+	.boldon = "\x1b[1m",
+	.normal = "\x1b[0m",
+},null_ui = {
+	.boldon = "",
+	.normal = "",
+};
+
+static const ui *curui = &ansi_ui;
+
+static void
+disable_ansi_check(FILE *fp){
+	if(!isatty(fileno(fp))){
+		curui = &null_ui;
+	}
+}
 
 void *mmap64(void *addr,size_t len,int prot,int flags,int fd,off_t off){
 	static void *(*shim_mmap)(void *,size_t,int,int,int,off_t);
@@ -26,6 +50,7 @@ void *mmap64(void *addr,size_t len,int prot,int flags,int fd,off_t off){
 			errno = EPERM;
 			return MAP_FAILED;
 		}
+		disable_ansi_check(stdout);
 	}
 	printf("offset: 0x%jx\n",off);
 	if(addr){
@@ -152,6 +177,7 @@ int ioctl(int fd,int req,uintptr_t op){//,unsigned o1,unsigned o2){
 			errno = EPERM;
 			return -1;
 		}
+		disable_ansi_check(stdout);
 	}
 	s = (req >> 16u) & 0x3fff;
 	printf("ioctl %x, %d-byte param, fd %d\t",req & 0xff,s,fd);
@@ -190,6 +216,7 @@ int open64(const char *p,int flags,mode_t mode){
 			fprintf(stderr,"couldn't shim open(2): %s\n",msg);
 			return 0;
 		}
+		disable_ansi_check(stdout);
 	}
 	printf("open(\x1b[1m\"%s\", \"%d\"\x1b[0m) = ",p,flags);
 	r = shim_open(p,flags,mode);
@@ -213,6 +240,7 @@ int strcoll(const char *s0,const char *s1){
 			fprintf(stderr,"couldn't shim strcoll(2): %s\n",msg);
 			return 0;
 		}
+		disable_ansi_check(stdout);
 	}
 	printf("strcoll(\x1b[1m\"%s\", \"%s\"\x1b[0m) = ",s0,s1);
 	r = shim_strcoll(s0,s1);
@@ -236,6 +264,7 @@ int strcmp(const char *s0,const char *s1){
 			fprintf(stderr,"couldn't shim strcmp(2): %s\n",msg);
 			return 0;
 		}
+		disable_ansi_check(stdout);
 	}
 	printf("strcmp(\x1b[1m\"%s\", \"%s\"\x1b[0m) = ",s0,s1);
 	r = shim_strcmp(s0,s1);
@@ -259,6 +288,7 @@ int strncmp(const char *s0,const char *s1,size_t n){
 			fprintf(stderr,"couldn't shim strcmp(2): %s\n",msg);
 			return 0;
 		}
+		disable_ansi_check(stdout);
 	}
 	printf("strcmp(\x1b[1m\"%s\", \"%s\", %zu\x1b[0m) = ",s0,s1,n);
 	r = shim_strcmp(s0,s1,n);
@@ -282,6 +312,7 @@ size_t strlen(const char *s){
 			fprintf(stderr,"couldn't shim strlen(2): %s\n",msg);
 			return 0;
 		}
+		disable_ansi_check(stdout);
 	}
 	printf("strlen(\x1b[1m%s\x1b[0m) = ",s);
 	r = shim_strlen(s);
@@ -305,6 +336,7 @@ char *getenv(const char *name){
 			fprintf(stderr,"couldn't shim getenv(2): %s\n",msg);
 			return NULL;
 		}
+		disable_ansi_check(stdout);
 	}
 	printf("getenv(\x1b[1m%s\x1b[0m) = ",name);
 	if( (r = shim_getenv(name)) ){
