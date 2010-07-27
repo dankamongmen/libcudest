@@ -169,7 +169,7 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	memset(dev->attrs,0,sizeof(dev->attrs));
 	off = dev->regaddr + BAR0_PMC;
 	mlen = BAR0_PMC_LEN;
-	debug("Device #%u PMC: 0x%zxb @ 0x%jx\n",dno,mlen,off);
+	debug("Device #%u PMC: 0x%zxb @ 0x%jx\n",dno,mlen,(uintmax_t)off);
 	if(snprintf(devn,sizeof(devn),"%s%u",DEVROOT,dno) >= (int)sizeof(devn)){
 		return CUDA_ERROR_INVALID_VALUE;
 	}
@@ -208,7 +208,7 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	}
 	mlen = BAR0_PBUS_LEN;
 	off = dev->regaddr + BAR0_PBUS;
-	debug("Device #%u PBUS: 0x%zxb @ 0x%jx\n",dno,mlen,off);
+	debug("Device #%u PBUS: 0x%zxb @ 0x%jx\n",dno,mlen,(uintmax_t)off);
 	if((map = mmap(NULL,mlen,PROT_READ,MAP_SHARED,dfd,off)) == MAP_FAILED){
 		fprintf(stderr,"Couldn't map PBUS (%s); check dmesg\n",strerror(errno));
 		close(dfd);
