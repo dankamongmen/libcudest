@@ -1,5 +1,5 @@
 .DELETE_ON_ERROR:
-.PHONY: all test clean
+.PHONY: all test clean devices
 .DEFAULT_GOAL:=all
 
 OUT:=out
@@ -24,6 +24,9 @@ CFLAGS:=-pipe -g -ggdb -D_GNU_SOURCE -std=gnu99 $(IFLAGS) -fpic -Wall -W -Werror
 BIN:=$(OUT)/cudactx $(OUT)/cudactx-base $(OUT)/cudadevices $(OUT)/cudaminimal $(OUT)/cudaminimal-base
 
 all: $(LIB) $(BIN)
+
+devices: $(OUT)/cudaminimal
+	sudo ./$<
 
 $(TAGS): $(addprefix src/,$(SRC)) $(addprefix shim/,$(SHIMSRC)) $(INC) $(wildcard $(NVSRC)/*.h)
 	@[ -d $(@D) ] || mkdir -p $(@D)
