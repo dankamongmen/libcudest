@@ -25,8 +25,8 @@ BIN:=$(OUT)/cudactx $(OUT)/cudactx-base $(OUT)/cudadevices $(OUT)/cudaminimal $(
 
 all: $(LIB) $(BIN)
 
-devices: $(OUT)/cudaminimal
-	sudo ./$<
+devices: $(OUT)/cudadevices
+	sudo $<
 
 $(TAGS): $(addprefix src/,$(SRC)) $(addprefix shim/,$(SHIMSRC)) $(INC) $(wildcard $(NVSRC)/*.h)
 	@[ -d $(@D) ] || mkdir -p $(@D)
