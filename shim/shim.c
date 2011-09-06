@@ -52,7 +52,7 @@ void *mmap64(void *addr,size_t len,int prot,int flags,int fd,off_t off){
 		}
 		disable_ansi_check(stdout);
 	}
-	printf("offset: 0x%jx\n",off);
+	printf("offset: 0x%jx\n",(uintmax_t)off);
 	if(addr){
 		printf("mmap 0x%zxb %d [%c%c%c%c] @ %p (%s)",len,fd,
 				prot & PROT_READ ? 'R' : 'r',
@@ -79,7 +79,7 @@ void *mmap64(void *addr,size_t len,int prot,int flags,int fd,off_t off){
 		for(z = 0 ; z < len ; z += 4){
 			printf("\x1b[1m");
 			if(z % 16 == 0 && z){
-				printf("0x%04lx\t\t\t",(uintptr_t)r + z);
+				printf("0x%04jx\t\t\t",(uintmax_t)r + z);
 			}
 			if(r[z / 4]){
 				printf("\x1b[32m");
@@ -130,7 +130,7 @@ decode_gpucall_pre(const uint32_t *dat,size_t s,size_t *ps){
 	}
 	printf("GPU method 0x%08x:%08x\t",dat[1],dat[2]);
 	*ps = ((uint64_t)dat[7] << 32) + dat[6];
-	dump_mem((uint32_t *)(((uint64_t)dat[5] << 32) + dat[4]),*ps);
+	dump_mem((uint32_t *)(((uintptr_t)dat[5] << 32) + dat[4]),*ps);
 }
 
 static void
@@ -143,7 +143,7 @@ decode_gpucall_post(const uint32_t *dat,size_t s,size_t ps){
 		printf("\x1b[1m\x1b[44mLENGTH MODIFIED BY CALL!\t(ret: 0x%x)\x1b[0m\n",dat[7]);
 	}
 	printf("GPU method 0x%08x:%08x\t",dat[1],dat[2]);
-	dump_mem((uint32_t *)(((uint64_t)dat[5] << 32) + dat[4]),ps);
+	dump_mem((uint32_t *)(((uintptr_t)dat[5] << 32) + dat[4]),ps);
 }
 
 int ioctl(int fd,int req,uintptr_t op){//,unsigned o1,unsigned o2){
