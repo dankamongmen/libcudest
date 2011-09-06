@@ -242,7 +242,7 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	}
 	memset(&contextreq,0,sizeof(contextreq));
 	//  FIXME
-	((uint64_t *)contextreq.ob)[2] = (uint64_t)context;
+	((uintptr_t *)contextreq.ob)[2] = (uintptr_t)context;
 	if(ioctl(ctlfd,NV_GPUOBJ,&contextreq)){
 		fprintf(stderr,"Couldn't create GPU object (%s)\n",strerror(errno));
 		free(context);
