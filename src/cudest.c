@@ -137,7 +137,7 @@ create_carddev(const char *fp,unsigned z){
 	return 0;
 }
 
-/*static int
+static int
 invokegpu(int ctlfd,uint32_t fam,uint32_t meth,void *v,size_t vlen){
 	gpuinvoke gpu;
 
@@ -155,7 +155,7 @@ invokegpu(int ctlfd,uint32_t fam,uint32_t meth,void *v,size_t vlen){
 		return -1;
 	}
 	return 0;
-}*/
+}
 
 static CUresult
 init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
@@ -255,14 +255,13 @@ init_dev(int ctlfd,unsigned dno,CUdevice_opaque *dev){
 	}
 	printf("Got a context\n");
 
-	/*
 	char name[NVNAMEMAX];
 	// FIXME need a context
 	memset(name,0,sizeof(name));
 	if(invokegpu(ctlfd,0x5c000002,0x20800110,name,sizeof(name))){
 		return CUDA_ERROR_INVALID_DEVICE;
 	}
-	strncpy(dev->name,name + 4,sizeof(dev->name));*/
+	strncpy(dev->name,name + 4,sizeof(dev->name));
 	return CUDA_SUCCESS;
 }
 
