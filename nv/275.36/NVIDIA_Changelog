@@ -1,0 +1,2898 @@
+
+======== Release 275 Entries ========
+
+    * Fixed a bug that caused trapezoid and triangle rendering to be very slow
+      on older GPUs with xorg-server 1.11.
+
+    * Added support for the following GPU:
+
+        * GeForce 510
+
+2011-09-07 version 275.28
+
+    * Added support for xserver ABI 11 (xorg-server 1.11).
+
+    * Fixed a bug that caused the GLSL built-in uniforms gl_FrontMaterial
+      and gl_BackMaterial to not be updated properly when calling
+      glMaterial from a display list.
+
+    * Fixed an error handling bug that caused the OpenGL driver to
+      crash while running certain WebGL applications.
+
+    * Fixed a bug in VDPAU that caused a glibc assertion when a call to
+      VdpDeviceCreateX11 failed in certain ways.
+
+2011-07-15 version 275.21
+
+    * Restored the release splash screen in the NVIDIA X driver (the beta
+      splash screen was accidentally reenabled between 275.09.07 and
+      275.19).
+
+    * Fixed a bug that caused nvidia-settings to crash when configuring
+      multiple X screens after all monitors were unplugged from one of
+      the X screens.
+
+    * Fixed a bug in nvidia-settings that caused the display configuration
+      page to show extra disabled displays after connecting a new monitor.
+
+    * Added X configuration options "3DVisionProHwButtonPairing",
+      "3DVisionProHwSinglePairingTimeout", "3DVisionProHwMultiPairingTimeout",
+      and "3DVisionProHwDoubleClickThreshold" to configure hardware button
+      based pairing in NVIDIA 3D Vision Pro.
+      See "Appendix B. X Config Options" in the README for more information.
+
+    * Fixed a bug that prevented initialization of the NVIDIA 3D Vision or
+      NVIDIA 3D Vision Pro hub if no EDID was present.
+
+2011-07-15 version 275.19
+
+    * Fix memory error and abort reported by glibc when running the application
+      FieldView from Intelligent Light.
+
+    * Fixed an OpenGL driver bug that caused an application crash when running
+      Altair HyperMesh.
+
+    * Fixed a performance problem when switching between stereo and monoscopic
+      rendering in the application Smoke.
+
+    * Fixed poor X driver handling of pixmap out of memory scenarios.
+
+    * Fixed an interrupt handling deficiency that could lead to performance and
+      stability problems when many NVIDIA GPUs shared few IRQs.
+
+    * Added support for the following GPUs:
+
+        * GeForce GT 540M
+
+    * Fixed bugs in the VDPAU presentation queue that could cause GPU errors
+      and hangs when destroying a presentation queue. This happens when
+      exiting applications, and also when toggling to and from full-screen
+      mode in Adobe Flash.
+
+2011-06-14 version 275.09.07
+
+    * Fixed a bug that caused desktop corruption in GNOME 3 after a
+      VT-switch or suspend/resume cycle.
+
+    * Added support for the following GPUs:
+
+        * GeForce GTX 560
+        * GeForce GT 545
+        * GeForce GTX 560M
+        * GeForce 410M
+        * GeForce 320M
+        * GeForce 315M
+
+        * Quadro 5010M
+        * Quadro 3000M
+        * Quadro 4000M
+
+2011-06-05 version 275.09.04
+
+    * Fixed a bug that caused freezes and crashes when resizing windows in
+      KDE 4 with desktop effects enabled using X.Org X server version 1.10
+      or later.
+
+    * Modified the X driver to request that hardware inform the audio driver
+      whenever a display is disabled. This will allow the audio driver to
+      generate the appropriate jack unplug events to applications.
+
+    * Added support for the GL_EXT_x11_sync_object extension.  See the
+      extension specification in the OpenGL registry here:
+
+        http://www.opengl.org/registry/specs/EXT/x11_sync_object.txt
+
+      for more details.
+
+    * Improved performance of window resize operations in KDE 4 on systems
+      with slow CPUs.
+
+2011-05-19 version 275.09
+
+    * Added support for hardware button based pairing to NVIDIA 3D Vision Pro.
+      Single click button on the hub to enter into a pairing mode which pairs
+      one pair of glasses at a time. Double click the same button on the
+      hub to enter into a pairing mode which pairs multiple pairs of glasses
+      at a time.
+
+    * Added unofficial GLX protocol support (i.e., for GLX indirect
+      rendering) for the following OpenGL extensions:
+
+      GL_NV_framebuffer_multisample_coverage
+      GL_NV_texture_barrier
+
+    * Added GLX protocol support (i.e., for GLX
+      indirect rendering) for the following OpenGL extension:
+
+      GL_NV_register_combiners2
+
+    * Fixed a bug that caused the pop-out and external DVI displays to go blank
+      on Lenovo ThinkPad W701 laptops.
+
+    * Fixed a bug that caused corruption on the menus in OpenOffice.org when the
+      screen is rotated.
+
+    * Improved performance of certain memory allocations.
+
+    * Fixed a bug that caused Java2D widgets to disappear when Java is
+      configured to render using FBOs.
+
+    * Fixed a bug that caused nvidia-settings to crash while saving the X
+      configuration file on some Linux distributions.
+
+    * Added a new X configuration option "BaseMosaic" which can be used to
+      extend a single X screen transparently across all of the available
+      display outputs on each GPU. See "Appendix B. X Config Options" in the
+      README for more information.
+
+======== Release 270 Entries ========
+
+    * Fixed a bug causing incorrect reporting of GPU core and ambient
+      temperatures via NV-CONTROL.
+
+2011-05-19 version 270.41.19
+
+    * Fixed a bug in the VDPAU presentation queue that could cause 1
+      second hangs when transitioning from blit-based display to overlay-
+      based display. This would most commonly happen when disabling a
+      compositing manager.
+
+    * Fixed a bug that could cause crashes when capturing SDI video.
+
+    * Fixed a corner-case in which the OpenGL driver could leak resources
+      in applications utilizing fork().
+
+    * Addressed a Linux kernel interface compatibility problem that could
+      lead to ioremap() errors and, potentially, functional and/or
+      stability problems.
+
+    * Fixed a bug that caused SLI initialization to fail on some Intel
+      based systems.
+
+    * Fixed a bug that caused SLI initialization to fail when using recent
+      Linux kernels, such as 2.6.38.
+
+2011-04-20 version 270.41.06
+
+    * Fixed a bug that caused some GPUs to stop responding when the X Server
+      was started. All GPUs are susceptible, but the failure was primarily
+      seen on GF104 and GF106 boards.
+
+    * Added support for the following GPUs:
+
+        * Tesla M2090
+        * Tesla M2075
+        * Tesla C2075
+
+        * Quadro 7000
+
+2011-04-18 version 270.41.03
+
+    * Fixed a bug causing the X server to hang every 49.7 days on 32-bit
+      platforms.
+
+    * Added support for the following GPUs:
+
+        * GeForce GT 520
+        * GeForce GT 525M
+        * GeForce GT 520M
+        * GeForce GT 445M
+        * GeForce GT 530
+        * GeForce 405
+        * GeForce GTX 590
+        * GeForce GTX 550 Ti
+        * GeForce GT 420
+        * GeForce GT 440
+        * GeForce GTX 470M
+        * GeForce GTX 485M
+        * GeForce GT 550M
+        * GeForce GT 555M
+
+        * NVS 4200M
+        * Quadro 1000M
+        * Quadro 2000M
+
+2011-03-02 version 270.30
+
+    * Added support for xserver ABI 10 (xorg-server 1.10).
+
+    * Dropped support for xserver ABI 9 (which was only used with xorg-server
+      1.10 RC2 due to a last-minute xserver change).
+
+2011-02-24 version 270.29
+
+    * Added official support for xorg-server 1.10 [RC2 only, see above].  The
+      -ignoreABI option is no longer required with this version of the server.
+
+2011-02-15 version 270.26
+
+    * Added NV-CONTROL event notification for NV_CTRL_FRAMELOCK_SYNC_READY
+      status changes.
+
+    * Added support for the following GPUs:
+
+        * GeForce GTX 560 Ti
+
+    * Added a new X configuration option "Interactive", which defaults to
+      enabled, but can be disabled to allow long-running GPU compute programs
+      to run concurrently with X.
+
+    * Fixed a bug in the VDPAU presentation queue that could cause VDPAU
+      "display preemption" when rendering to tiny or zero-sized windows or
+      pixmaps.
+
+    * Fixed a bug in VDPAU which prevented use of the overlay presentation
+      queue following an application exiting without gracefully destroying its
+      VDPAU presentation queue.
+
+    * Fixed a bug in VDPAU that prevented the overlay from ever being used if
+      a presentation queue was created while the target window was redirected
+      using the Composite extension when the presentation queue was created.
+
+2011-01-21 version 270.18
+
+    * Added preliminary support for xserver 1.10.
+
+    * Reorganized the NVIDIA driver's /proc file system layout to better
+      reflect current needs: /proc/driver/nvidia/cards/0..N has been
+      moved to /proc/driver/nvidia/gpus/0..N/information
+
+    * Added new shared library: libnvidia-ml.so.
+
+      NVML provides programmatic access to static information and monitoring
+      data for NVIDIA GPUs, as well as limited managment capabilities. It is 
+      intended for use with Tesla compute products.
+
+      See web-based documentation and associated nvml.h header for more info.
+
+    * Added a new X configuration option "3DVisionDisplayType" to specify
+      the display type when NVIDIA 3D Vision is enabled with a non
+      3D Vision ready display.
+
+    * Fixed several bugs relating to hardware-accelerated gradients, which were
+      causing visual corruption in some of the default Ubuntu GNOME themes.
+
+    * Added unofficial GLX protocol support (i.e., for GLX indirect
+      rendering) for the following OpenGL extensions:
+      GL_ARB_shader_subroutine
+      GL_ARB_map_buffer_range                         
+
+    * Added GLX protocol support (i.e., for GLX
+      indirect rendering) for the following OpenGL extensions:
+      GL_NV_half_float
+      GL_NV_occlusion_query                             
+      GL_EXT_blend_equation_separate                  
+      GL_EXT_depth_bounds_test
+
+======== Release 265 Entries ========
+
+    * Modified colormap updates to no longer be synchronized to vblank.  This
+      allows applications to send XStoreColor and XStoreColors requests faster
+      than the screen's refresh rate.
+
+      This behavior can be controlled by a new NV-CONTROL attribute,
+      NV_CONTROL_SYNC_LUT_UPDATES.  By default, LUT updates are not
+      synchronized.  This may cause flickering in some applications that use the
+      colormap to perform animation, such as xpilot running on a depth 8 X
+      screen.  If you experience flickering, try running
+
+          nvidia-settings -a [gpu:0]/SynchronousPaletteUpdates=1
+
+======== Release 260 Entries ========
+    * Updated the NVIDIA X driver to not update mode timings for G-Sync
+      compatibility when NVIDIA 3D Vision or NVIDIA 3D VisionPro is
+      enabled along with a G-Sync device.
+
+    * Added support for the following GPUs:
+
+	* Quadro 2000 D
+	* Quadro 400
+
+2011-01-21 version 260.19.36
+
+    * Updated the NVIDIA kernel module to ensure that all system memory
+      allocated by it for use with GPUs or within user-space components of the
+      NVIDIA driver stack is initialized to zero.  A new NVIDIA kernel module
+      option, InitializeSystemMemoryAllocations, allows administrators to
+      revert to the previous behavior.
+
+    * Fixed a bug that caused X servers version 1.9 and higher to crash when
+      color index overlays were enabled.
+
+    * Fixed a bug that caused pixel value 255 to be treated as transparent in
+      color index overlays.
+
+2010-12-13 version 260.19.29
+
+    * Added support for the following GPUs:
+
+        * GeForce GTX 460 SE
+        * GeForce GTX 570
+
+	* Quadro 5000M
+	* NVS 300
+
+    * Fixed a bug that caused some OpenGL applications to become
+      unresponsive for up to a minute on some GPUs when changing
+      the resolution or refresh rate.
+
+    * Added support for NVIDIA 3D Vision Pro.
+      See the "Stereo" X configuration documentation in the README
+      for further details.
+
+    * Added a new X configuration option "3DVisionProConfigFile"
+      to allow user provide a filename which NVIDIA X driver uses
+      to store 3D Vision Pro configuration settings.
+      See "Appendix B. X Config Options" in the README for
+      more information.
+
+2010-11-11 version 260.19.21
+
+    * Fixed a race condition in OpenGL that could cause crashes with
+      multithreaded applications.
+
+    * Fixed a bug that may cause OpenGL applications which fork to crash.
+
+    * Fixed a bug in VDPAU that caused it to attempt allocation of huge
+      blocks of system memory. This regression was introduced in the
+      260.* driver series.
+
+2010-10-13 version 260.19.12
+
+    * Added support for the following GPUs:
+
+        * GeForce GTS 450
+        * GeForce GTX 460M
+        * GeForce GT 415M
+        * GeForce GT 425M
+        * GeForce GT 420M
+        * GeForce GT 435M
+
+        * Quadro 2000
+        * Quadro 600
+
+    * Temporarily added back OpenGL header files to the Linux driver
+      package, though these are not installed by default.  To have these
+      OpenGL header files installed, pass "--opengl-headers" to the NVIDIA
+      .run file.  These will be removed from future NVIDIA driver packages
+      once http://www.opengl.org/registry/ provides gl.h and glx.h.
+
+    * Fixed the CustomEDID X configuration option so that it can handle
+      EDID files from Linux procfs; e.g., /proc/acpi/video/IGPU/LCD0/EDID.
+
+2010-09-15 version 260.19.06
+
+    * Fixed an interaction problem with a change in X server behavior that
+      caused slow text rendering on X.Org xserver 1.9.
+
+    * Enhanced VDPAU to support interop with CUDA and OpenGL when Xinerama
+      is active.
+
+    * Fixed a bug in VDPAU that prevented temporal-spatial de-interlacing from
+      operating when temporal de-interlacing was not also enabled.
+
+    * Added support for configuring the dithering depth used when driving
+      a flat panel with a GeForce 8 family or Quadro 4600/5600 or
+      newer GPU.  See the "Dithering Controls" in the Flat Panel page
+      in nvidia-settings.
+
+2010-09-08 version 260.19.04
+
+    * Added support for the nvcuvid API.
+
+      nvcuvid provides a mechanism for decoding video and exposing the
+      surfaces to CUDA, allowing applications to perform custom processing of
+      the video. nvcuvid is primarily targeted at transcoding and video-
+      processing applications. nvcuvid was already available on other
+      platforms.
+
+      By default, nvidia-installer places the nvcuvid library in
+      /usr/lib/libnvcuvid.so, or in the appropriate library path for
+      your system.  The nvcuvid header files can be retrieved from the
+      CUDA toolkit package.
+
+    * Stopped packaging and installing OpenGL, VDPAU, CUDA, and OpenCL
+      header files with the driver.  Those interested in these files can
+      get them from their Linux distributions' packages, where available,
+      or upstream from:
+
+        OpenGL header files (gl.h, glext.h glx.h, glxext.h):
+            http://www.opengl.org/registry/
+
+        VDPAU header files (vdpau.h and vdpau_x11.h):
+            http://freedesktop.org/wiki/Software/VDPAU
+
+        CUDA and OpenCL header files (cuda.h, cudaGL.h, cudaVDPAU.h,
+                cl.h, cl_gl.h, cl_platform.h):
+            http://developer.nvidia.com/object/gpucomputing.html
+
+      Note that while libvdpau.so is still included in 260.xx drivers,
+      it will be removed from a future release series in early 2011.
+      Distributors are encouraged to package libvdpau.so from
+      http://freedesktop.org/wiki/Software/VDPAU
+
+    * Fixed a bug in VDPAU that could cause a "display preemption" when
+      toggling MPlayer to full-screen the first time.
+
+    * Added OpenGL 4.1 support for Quadro Fermi, GeForce GTX 4xx, and
+      later GPUs.
+
+    * Enhanced VDPAU to fully support Xinerama.
+
+    * Fixed a bug in the X driver that prevented operation of Xinerama when
+      using multiple NVIDIA GPUs from different major hardware generations
+      on X with ABI 4 or greater.
+
+    * Fixed a bug in the OpenGL driver's Xinerama support.
+
+      Rendering should have ocurred to all physical X screens driven by an
+      NVIDIA GPU compatible with the NVIDIA GPU driving physical X screen 0.
+      However, if some physical X screen did not satisfy that requirement,
+      then not only would that physical X screen not be rendered to (as
+      expected), but also all physical X screens with a higher number would
+      not be rendered to (which was unexpected).
+
+    * Added GPU "Processor Clock" reporting to the nvidia-settings PowerMizer
+      page.
+
+    * Implemented support for SLI Mosaic Mode on Quadro FX 5800 and
+      Quadro Fermi and newer Quadro GPUs.
+
+    * Enhanced the VDPAU overlay-based presentation queue to allow it to be
+      used when SLI is active, and in some cases when the X composite
+      extension is enabled. See the README for further details.
+
+    * Added support for configuring the dithering mode used when driving
+      a flat panel with a GeForce 8 family or Quadro 4600/5600 or
+      newer GPU.  See the "Dithering Controls" in the Flat Panel page
+      in nvidia-settings.
+
+    * Added unofficial GLX protocol support (i.e., for GLX indirect
+      rendering) for the following OpenGL extensions:
+      GL_EXT_texture_integer
+      GL_ARB_stencil_two_side
+      GL_EXT_transform_feedback2
+      GL_NV_transform_feedback2
+      GL_NV_conditional_render
+
+    * Added GLX protocol support (i.e., for GLX indirect rendering)
+      for the following OpenGL extensions:
+      GL_NV_point_sprite
+      GL_EXT_stencil_two_side
+      GL_EXT_point_parameters
+      GL_ARB_transpose_matrix
+      GL_EXT_framebuffer_blit
+      GL_EXT_framebuffer_multisample
+
+    * GLX protocol for the following OpenGL extension is promoted
+      from unofficial GLX ptotocol to ARB approved GLX protocol:
+      GL_EXT_geometry_shader4
+      GL_ARB_shader_objects
+      GL_ARB_vertex_shader
+      GL_ARB_fragment_shader
+
+    * Added support for configuring individual displays as any eye in passive
+      stereo mode "4" when using TwinView or SLI Mosaic through extensions to
+      the MetaMode syntax.
+
+    * Added ColorSpace and ColorRange features for HDMI. These give
+      the ability to output YUV over HDMI and select full/reduced
+      color range on RGB over HDMI. ColorSpace and ColorRange
+      are X Configuration options and can be changed dynamically
+      through nvidia-settings.
+
+======== Release 256 Entries ========
+
+    * Fixed a bug that prevented XvMC from initializing in most cases.
+
+    * Added support for xorg-server video driver ABI version 8, which will be
+      included in the upcoming xorg-server-1.9 series of releases.
+
+    * Fixed a bug that caused extremely slow rendering of OpenGL applications
+      on X screens other than screen 0 when using a compositing manager.
+
+    * Fixed a regression introduced after 256.35 that caused stability
+      problems on GPUs such as GeForce GT 240.
+
+    * Fixed a slow kernel virtual address space leak observed when
+      starting and stopping OpenGL, CUDA, or VDPAU applications.
+
+    * Fixed a bug that left the system susceptible to hangs when running
+      two or more VDPAU applications simultaneously.
+
+2010-07-29 version 256.44
+
+    * Added Support for Quadro 4000, Quadro 5000, and Quadro 6000.
+
+    * Updated nvidia-installer to detect the nouveau kernel module and
+      fail with an appropriate error message.
+
+    * Added information to the NVIDIA driver README on how to disable
+      the nouveau driver.
+
+    * Fixed VDPAU to not print a debug error message when calling
+      VdpVideoMixerQueryFeatureSupport with an unsupported or unknown
+      VdpVideoMixerFeature.
+
+    * Removed the requirement that in TwinView passive stereo, MetaModes
+      must have identical viewports on each monitor.
+
+    * Removed the requirement that in active stereo, all monitors must
+      use identical modetimings.
+
+    * Enhanced VDPAU to better report certain kinds of initialization error.
+
+    * Fixed a regression that caused Xv to return BadAlloc errors on AGP
+      systems when using the AGP GART driver contained in the NVIDIA driver.
+      This fixes the problem reported in nvnews.net thread 151199.
+
+2010-06-22 version 256.35
+
+    * Fixed a regression in 256.29 where Performance Level clock
+      frequencies were reported incorrectly in nvidia-settings.
+
+    * Fixed a 3D Vision Stereo bug that caused the stereo glasses to not
+      toggle when the flat panel was not running at its native mode timings.
+
+    * Fixed a bug that caused nvidia-settings to crash when rendering
+      its thermal gauge widget if the range of valid values for the thermal
+      sensor was empty.
+
+2010-05-28 version 256.29
+
+    * Fixed a bug which prevented use of high performance PowerMizer
+      levels on systems with certain ACPI configurations.
+
+    * Fixed a bug that caused non-primary Fermi GPUs to fail to initialize
+      framebuffer memory. This caused a variety of symptoms, up to and
+      including system hangs.
+
+2010-05-21 version 256.25
+
+    * Added unofficial GLX protocol support (i.e., for GLX indirect
+      rendering) for the following OpenGL extensions:
+
+       GL_ARB_blend_func_extended
+       GL_ARB_draw_buffers_blend
+       GL_ARB_sample_shading
+       GL_ARB_timer_query
+       GL_EXT_draw_buffers2
+       GL_EXT_separate_shader_objects
+       GL_NV_explicit_multisample
+       GL_NV_transform_feedback
+
+    * Improved Thermal Settings reporting in nvidia-settings to
+      accurately reflect hardware configurations with multiple thermal
+      sensors.
+
+    * Fixed an interaction problem between Compiz and
+      'screen-scraping' VNC servers like x11vnc and vino that caused the screen
+      to stop updating.
+      Fixes Launchpad bug #353126.
+
+    * Enhanced VDPAU to add basic support for Xinerama. VDPAU will now
+      operate on a single physical X screen under Xinerama. See the
+      README for more details.
+
+    * Enhanced VDPAU's handling of corrupt clips of all formats on GPUs with
+      VDPAU feature set C to be at least as good as on GPUs with VDPAU
+      feature set B. This significantly improves various clips provided by
+      nvnews.net user eamiller.
+
+    * Fixed a bug in Xv attribute handling that caused hue, saturation,
+      brightness, and contrast values to be misapplied when using an
+      Xv overlay adaptor.
+
+    * Fixed a bug in the XvMC driver that prevented it from working on
+      systems with AGP graphics cards.
+
+    * Enhanced VDPAU to clear all VdpVideoSurfaces to black when allocated.
+      This provides more consistent results when using a surface as a
+      reference when no prior decode operation has written to that surface.
+      In turn, this improves the results of decoding some corrupt streams,
+      such as "p_only_no_play" from ffmpeg bug 1124.
+
+    * Implemented new APIs to allow sharing VDPAU surfaces with OpenGL and
+      CUDA. The OpenGL extension is GL_NV_vdpau_interop. For CUDA, please
+      see the documentation in the CUDA toolkit for details.
+
+    * Worked around a bug where the combination of a GPU with VDPAU feature
+      set A together with specific motherboard chipsets could cause visible
+      corruption when decoding some MPEG-2 streams
+
+    * Fixed a bug that prevented the VDPAU overlay-based presentation queue
+      from being used more than a few hundred times per X server invocation.
+
+    * Renamed the driver file libGLcore.so.VERSION to
+      libnvidia-glcore.so.VERSION, as a small step towards reducing the
+      filename collisions between NVIDIA's and Mesa's OpenGL implementations.
+      This driver file is used by NVIDIA's libGL.so and libglx.so, and
+      should never be used directly by applications.
+
+    * Changed the SONAME of libnvidia-glcore.so.VERSION,
+      libnvidia-tls.so.VERSION, and libnvidia-compiler.so.VERSION to be
+      ".so.VERSION", rather than ".so.1".  These driver files are only used
+      by other NVIDIA driver components, and are only intended to be used
+      by components of the matching NVIDIA driver version.
+
+    * Removed the "-pkg#" suffix from the NVIDIA Linux .run files.
+      The packages are now simply named "NVIDIA-Linux-ARCH-VERSION.run".  On
+      Linux-x86_64, a package which omits the 32-bit compatibility libraries
+      is also available: "NVIDIA-Linux-x86_64-VERSION-no-compat32.run"
+
+    * Simplified the directory structure of the Linux extracted package;
+      most driver files are now just contained within the top level directory
+      of the package.  Pass the '--list' option to the .run file for details.
+
+    * Removed precompiled kernel interfaces from the NVIDIA Linux-x86 .run
+      file; these were ancient and had not been updated in years.  Going
+      forward, NVIDIA does not plan to provide precompiled kernel interfaces
+      with the Linux .run files.  However, nvidia-installer and the .run
+      file will retain the ability for users to add their own precompiled
+      kernel interfaces via the '--add-this-kernel' .run file option.
+
+    * Compressed the nvidia-settings, nvidia-installer, and nvidia-xconfig 
+      tarballs with bzip2, rather than gzip.
+
+======== Release 195 Entries ========
+
+    * Fixed a problem with SLI SFR, AFR, and SLIAA modes with GeForce GTX 480
+      and GeForce GTX 470 and high-resolution display modes.
+
+2010-04-28 version 195.36.24
+
+    * Added support for the following GPUs:
+
+        * GeForce GTX 480
+        * GeForce GTX 470
+        * Tesla C2050
+
+    * Fixed a problem that caused occasional red flashes in XVideo frames.
+
+    * Added official support for xserver 1.8.  The -ignoreABI option
+      is no longer required with this version of the server.
+
+    * Updated the "Supported NVIDIA GPU Products" list to include various
+      supported GPUs that were missing previously.
+
+2010-03-15 version 195.36.15
+
+    * Fixed a regression that caused the driver to fail to properly adjust
+      the GPU fan speed on some GPUs.
+
+    * Fixed a bug that prevented performance level transitions on recent
+      GPUs with SDDR3 and GDDR5 memory.
+
+    * Fixed a bug that caused the X server to crash when rendering
+      occurred while the X server was not on the active VT.
+
+2010-03-03 version 195.36.08
+
+    * Added support for the following GPUs:
+
+        * Quadro FX 880M
+        * GeForce GTS 350M
+        * GeForce GTS 360M
+
+    * Fixed a bug that caused screen corruption after an application
+      released a GLX_NV_present_video device.
+
+    * Fixed an X server crash caused by starting nvidia-settings while X was not
+      on the active VT.
+
+    * Fixed brightness control hotkeys on some laptops.
+
+    * Fixed an nvidia-settings bug that produced many "Bad argument" warning
+      messages when running nvidia-settings --query all.
+
+    * Fixed an installer bug that produced the following message:
+
+        WARNING: Unable to perform the runtime configuration check for library
+        'libGL.so.1' ('/usr/lib/libGL.so.195.36.03'); assuming successful
+        installation.
+
+    * Fixed a bug that caused G-Sync stereo synchronization to fail sometimes
+      when enabling frame lock.
+
+    * Fixed a bug that caused OpenGL applications to occasionally crash with
+      "double free or corruption" messages when exiting.
+
+    * On GPUs with VDPAU feature set A, enhanced VDPAU's handling of some
+      corrupted or incorrectly formatted MPEG-1/2 streams. This solves a
+      reported issue with "0testbad.mpg".
+
+    * Fixed a bug in the VDPAU video mixer that caused chroma aberrations,
+      and corruption in the right-hand few columns of pixels, when post-
+      processing video surfaces with widths not an exact multiple of 4 pixels.
+
+    * Fixed a bug that prevented the GPUFanControlState attribute from
+      being set on the nvidia-settings command line.
+
+2010-02-03 version 195.36.03
+
+    * Fixed a regression that made the "TVStandard" X configuration option
+      cause system hangs with products from the GeForce 6 and 7 series.
+
+    * Worked around a bug in some AUO laptop flat panels where the native mode
+      in the EDID is invalid, leading to a 640x480 desktop repeated six times
+      across the screen.
+
+    * Increased the maximum number of slices supported by VDPAU for MPEG-2
+      streams, in order to cope with the region 1 DVD "A Christmas Story".
+
+    * Added unofficial preliminary support for xorg-server video driver ABI
+      version 7, including xorg-server-1.7.99.2.
+
+    * Fix the soname of libvdpau_nvidia.so.1 and libvdpau_trace.so.1 to
+      match their filenames.
+
+2009-12-22 version 195.30
+
+    * Fixed a performance regression with non-antialiased text in KDE4.
+
+    * Enabled GPU acceleration for many RENDER compositing operations that were
+      previously processed in software, including conjoint and disjoint blending
+      modes and component alpha blending.
+
+    * Added experimental GPU acceleration of the RENDER CompositeTrapezoids
+      operation. This can be enabled at runtime by running:
+
+        nvidia-settings -a AccelerateTrapezoids=1
+
+      This is only supported on the GeForce GTX series or newer products.
+
+    * Fixed a bug in the VDPAU overlay-based presentation queue that caused
+      high CPU usage during "put bits" operations when more than two surfaces
+      were queued.
+
+    * Updated `nvidia-settings --query all` to report all available
+      attributes queryable through all NV-CONTROL target types.
+
+2009-11-23 version 195.22
+
+    * Enhanced the VDPAU blit-based presentation queue to provide values of
+      "first_presentation_time" that have less jitter.
+
+    * Add support for R16F and RG32F GLXFBConfigs when using GeForce 8
+      series and higher GPUs.
+
+    * Added support for NVIDIA 3D Vision Stereo on Linux with Quadro
+      GPUs. See the "Stereo" X configuration documentation in the README
+      for details.
+
+    * Added support for A2BGR10 32-bit GLX visuals on 30-bit X screens.
+      These allow some level of window transparency when using 30-bit
+      visuals with GLX and Composite, but they may cause problems with
+      older X servers and/or applications.  ARGB GLX visuals can be
+      disabled by adding:
+
+        Option "AddARGBGLXVisuals" "False"
+
+      to the X configuration file.
+
+    * Fixed a problem that caused DisplayPort devices to behave incorrectly when
+      DPMS power saving mode was triggered.
+
+    * Updated VDPAU to improve thread concurrency.  See the README for
+      details.
+
+    * Altered NVIDIA X driver behavior in the case that no display
+      devices are connected to the GPU.  Previously, in this case,
+      the NVIDIA X driver would pretend a CRT was connected to the GPU.
+      Now, the NVIDIA X driver will not automatically pretend that
+      any CRTs are connected.  If the X driver does not detect any
+      connected display devices, the X server will fail to start.
+
+      To restore the old behavior, use the ConnectedMonitor X
+      configuration option; e.g.,
+
+        Option "ConnectedMonitor" "CRT"
+
+      Alternatively, if display is not desired, Quadro and Tesla GPU
+      users can enable "NoScanout" mode, which bypasses any mode timing
+      validation or use of display devices; this is configured with:
+
+        Option "UseDisplayDevice" "none"
+
+    * Disabled software cursors when the driver is operating in "no scanout"
+      (UseDisplayDevice "none") mode.  The software cursor image is not visible
+      in remote desktop applications or screenshots anyway, so having software
+      cursor enabled was unnecessary.
+
+    * Changed glXSwapBuffers() behavior for a pixmap such that it is now a no-op
+      in the direct rendering case in order to match the indirect case and
+      comply with the GLX spec. Previously, calling glXSwapBuffers() on pixmaps
+      in the direct case would swap the pixmap's buffers if the pixmap was
+      double buffered.
+
+    * Modified the installation location and names of internal VDPAU libraries
+      to conform to conventions and Debian packaging guidelines. New versions
+      of libvdpau expect this layout. Compatibility with old versions of
+      libvdpau is maintained with symlinks.
+
+    * Fixed a bug that could cause errors in graphical applications run after a
+      previous application using VDPAU and OpenGL. This behaviour was observed
+      when running Gwenole Beauchesne's hwdecode-demos application.
+
+    * Modified vdpau.h to increment VDPAU_VERSION, to reflect the fact that
+      new features have been added in the past. Also, add the new define
+      VDPAU_INTERFACE_VERSION.
+
+    * Fixed a periodic temporary hang in the VDPAU blit-based presentation
+      queue.
+
+    * Fixed a problem that caused resolution limitations or corruption on
+      certain DisplayPort devices such as the Apple 24" Cinema display or some
+      DisplayPort to VGA adapters.
+
+    * Disabled the UseEvents option for GeForce 8 series and higher GPUs due to
+      a problem that causes occasional short hangs.  It will be re-enabled when
+      that bug has been tracked down and fixed.
+
+    * VDPAU now allows multiple streams to be decoded at once, without the
+      need to set any environment variables.
+
+======== Older Releases ========
+
+2009-10-21 version 190.42
+
+    * Fixed a bug in the nvidia-settings disclaimer window for the GPU
+      Clock Frequencies Coolbits page, such that the "Accept" button is
+      selectable when the desktop is so tall that the entire disclaimer
+      can be viewed without scrolling.
+
+    * Fixed a recent regression that caused the Xinerama option to not be set
+      properly in the X configuration file when saving and merging from the
+      nvidia-settings X Server Display Configuration page.
+
+    * Fixed a resource leak in VDPAU's blit-based presentation queue.
+      This bug limited the number of presentation queue objects that could be
+      created and destroyed in a single application instance, and hence could
+      limit the number of streams that could be displayed and/or the number
+      of iterations of "loop" playback.
+
+    * Fixed a power management regression that prevented some notebooks
+      and systems with integrated GeForce 8 and 9 series GPUs from
+      suspending.
+
+    * Fixed a regression that caused TV-OUT controls to be unavailable on
+      some GeForce 6 and 7 series GPUs.
+
+2009-10-16 version 190.40
+
+    * Added support for OpenGL 3.2.
+
+    * Added support for NVIDIA Quadro SDI Capture, part of the Quadro
+      Digital Video Pipeline.
+
+    * Added support for the following GPUs:
+
+        GeForce G102M 
+        GeForce GT 220 
+        GeForce G210 
+        GeForce G210M 
+        GeForce GT 230M 
+        GeForce GT 240M 
+        GeForce GTS 250M 
+        GeForce GTS 260M 
+
+    * Updated the NVIDIA X driver to allow, on GeForce 8 or greater GPUs,
+      more modes to validate on digital display devices whose EDIDs
+      report very constrained HorizSync or VertRefresh ranges.
+
+    * Fixed a randomly occurring X server crash caused by the PixmapCache
+      option.
+
+    * Increased the allowed amount of overscan compensation from 100 to 200.
+
+    * On GPUs with VDPAU feature set B, VDPAU's handling of some corrupted
+      or incorrectly formatted H.264 and MPEG streams has been improved.
+
+    * Fixed a memory allocation problem with pre-GeForce 8
+      GPUs that caused GLX_EXT_texture_from_pixmap clients (e.g., Compiz,
+      KDE 4) to display incorrect contents.
+
+2009-09-24 version 190.36
+
+    * Added support for X.Org xserver 1.6.99.901 (also known as 1.7.0 RC1).
+
+    * Add a new OverscanCompensation NV-CONTROL attribute, available on GeForce
+      8 and higher.  This option specifies the amount of overscan compensation
+      to apply to the current mode.  It is measured in raster pixels, i.e.
+      pixels as specified in the current mode's backend timings.
+
+    * Updated nvidia-installer to detect newer Debian distributions that use
+      /usr/lib32 instead of /emul/ia32-linux as the 32-bit library path.
+
+    * Added GLX support for OpenGL 3.2 context profiles through the extension
+      GLX_ARB_create_context_profile.
+
+2009-09-04 version 190.32
+
+    * Added support for IgnoreEDIDChecksum X configuration option, which can be
+      used to force the X driver to accept the EDID of a display device even
+      when the checksum is invalid. Please see the README IgnoreEDIDChecksum
+      description for a caution and details of use.
+    
+    * Added support for configuring the GPU's fan speed; see the
+      "Coolbits" X configuration option in the README.
+
+    * Fixed a bug in VDPAU that could cause visible corruption near the bottom
+      edge of the picture when decoding VC-1 simple/main profile clips whose
+      heights are not exact multiples of 16 pixels, on GPUs with VDPAU feature
+      set A.
+
+    * On GPUs with VDPAU feature set C, VDPAU now supports decoding MPEG-4
+      Part 2, DivX 4, and DivX 5 video. The VDPAU API has been enhanced to
+      expose this feature.
+
+    * On GPUs with VDPAU feature set C, VDPAU now supports a higher quality
+      video scaling algorithm. The VDPAU API has been enhanced to expose this
+      feature.
+
+2009-08-21 version 190.25
+
+    * Added code to reject screen modes based on available DisplayPort link
+      bandwidth.  Fixes display corruption caused by allowing high bandwidth
+      modes on display devices that can't handle them, such as certain
+      DisplayPort-to-VGA adapters that only support 2 DisplayPort lanes.
+
+    * Fixed an initialization problem on some mobile GPUs.
+
+    * Worked around X.Org X server Bugzilla bug #22804.  This bug
+      allows X clients to send invalid XGetImage requests to the
+      hardware, leading to screen corruption or hangs.  This was most
+      commonly triggered by running JDownloader in KDE 4.
+
+    * Fixed a crash in nvidia-settings displaying GPU information when in Xinerama.
+
+2009-07-23 version 190.18
+
+    * Added GLX protocol support (i.e., for GLX indirect rendering)
+      for the following OpenGL extensions:
+
+        GL_ARB_draw_buffers
+        GL_EXT_Cg_shader
+        GL_EXT_gpu_program_parameters
+        GL_NV_fragment_program
+        GL_NV_gpu_program4
+        GL_NV_register_combiners
+        GL_NV_vertex_program1_1
+        GL_NV_vertex_program2
+
+    * Added unofficial GLX protocol support (i.e., for GLX indirect
+      rendering) for the following OpenGL extensions:
+
+        GL_ARB_geometry_shader4
+        GL_ARB_shader_objects
+        GL_ARB_texture_buffer_object
+        GL_ARB_vertex_buffer_object
+        GL_ARB_vertex_shader
+        GL_EXT_bindable_uniform
+        GL_EXT_compiled_vertex_array
+        GL_EXT_geometry_shader4
+        GL_EXT_gpu_shader4
+        GL_EXT_texture_buffer_object
+        GL_NV_geometry_program4
+        GL_NV_vertex_program
+        GL_NV_parameter_buffer_object
+        GL_NV_vertex_program4
+
+      GLX protocol for GL_EXT_vertex_array was also updated to incorporate
+      rendering using GL_ARB_vertex_buffer_object.
+      Use of these extensions with GLX indirect rendering requires
+      the AllowUnofficialGLXProtocol X configuration option and the
+      __GL_ALLOW_UNOFFICIAL_PROTOCOL environment variable.
+
+    * Fixed glXQueryVersion to report GLX version 1.4.  NVIDIA's GLX
+      version has been 1.4 for several releases, and was already reported
+      as 1.4 in the GLX client and GLX server version strings.
+
+    * Fixed a problem that caused window border corruption when the screen is
+      rotated.
+
+    * Added support for configuring the GPU PowerMizer Mode on
+      GeForce 8 or later GPUs with multiple performance levels via
+      nvidia-settings and NV-CONTROL.
+
+2009-08-21 version 185.18.36
+
+    * Fixed a bug that caused kernel panics when starting X on some
+      mobile GPUs.
+
+    * Fixed an interaction problem between VDPAU and PowerMizer when using
+      VDPAU solely as a display mechanism, and not to decode video streams.
+      The GPU performance level should now be raised, if required, in this
+      scenario.
+
+    * Fixed VDPAU to avoid "display preemption" in some cases where a
+      VdpOutputSurface is deleted while it is still active (either queued or
+      visible) in a VdpPresentationQueue. In particular, this can occur in
+      MPlayer when using the "-fs" option, and could completely prevent
+      VDPAU from operating successfully, depending on the exact timing
+      conditions.
+
+2009-07-31 version 185.18.31
+
+    *  Fixed a crash on certain mobile GPUs.
+
+2009-07-28 version 185.18.29
+
+    * Fixed a bug that could cause occasional memory corruption problems or
+      segmentation faults when running OpenGL applications on Quadro GPUs.
+
+    * Fixed a deadlock in the OpenGL library that could be triggered in certain
+      rare circumstances on Quadro GPUs.
+
+    * Fixed the order of outputs in the GPUScaling nvidia-settings property.
+
+    * Fixed a bug that caused graphics corruption in some OpenGL applications
+      when the Unified Back Buffer is enabled the application window is moved.
+
+    * Fixed a bug that caused glXGetVideoSyncSGI, glXWaitVideoSyncSGI, and
+      glXGetRefreshRateSGI to operate on the wrong screen when there are
+      multiple X screens.
+
+    * Fixed a bug that causes corruption or GPU errors when an application
+      paints a redirected window whose background is set to ParentRelative on
+      X.Org servers older than 1.5.
+
+      This was typically triggered by running Kopete while using Compiz or
+      Beryl.
+
+    * Fixed a bug in VDPAU that could cause visible corruption when decoding
+      H.264 clips with alternating frame/field coded reference pictures, and
+      a video surface is concurrently removed from the DPB, and re-used as
+      the decode target, in a single decode operation. This affected all GPUs
+      supported by VDPAU.
+
+    * Fixed a bug in VDPAU that could cause visible corruption near the bottom
+      edge of the picture when decoding VC-1 advanced profile clips whose
+      heights are not exact multiples of 16 pixels, on G98 and MCP7x (IGP)
+      GPUs.
+
+    * Enhanced VDPAU to better handle corrupt/invalid H.264 bitstreams on
+      G84, G86, G92, G94, G96, or GT200 GPUs. This should prevent most cases
+      of "display preemption" that are caused by bitstream errors.
+
+    * Fixed an X server crash when using the VDPAU overlay-based presentation
+      queue and VT-switching away from the X server.
+
+    * Enhanced VDPAU's detection of the GPU's video decode capabilities.
+
+    * Fixed a bug in VDPAU that could cause ghosting/flashing issues when
+      decoding H.264 clips, in certain full DPB scenarios, on G98 and MCP7x.
+
+    * Fixed VDPAU to detect an attempt to destroy the VdpDevice object when
+      other device-owned objects still exist. VDPAU now triggers "display
+      preemption", and returns an error, when this occurs.
+
+    * Enhanced VDPAU's error handling and resource management in presentation
+      queue creation and operation. This change correctly propagates all
+      errors back to the client application, and avoids some resource leaks.
+
+   Linux specific changes:
+
+    * Added code to forcibly terminate long-running CUDA kernels when
+      Ctrl-C is pressed.
+
+    * Fixed an interaction problem between PowerMizer and CUDA applications that
+      caused the performance level to be reduced while the CUDA kernel is
+      running.
+
+    * Made CUDA compute-exclusive mode persistent across GPU resets.
+
+   FreeBSD specific changes:
+
+    * Fixed an installer problem that prevented Linux ABI compatibility from
+      working with newer versions of FreeBSD.
+
+2009-05-27 version 185.18.14
+
+    * Fixed a Xinerama drawable resource management problem that can cause
+      GLXBadDrawable errors in certain cases, such as when Wine applications are
+      run.
+
+    * Fixed XineramaQueryScreens to return 0 screens instead of 1 screen with
+      the geometry of screen 0 when XineramaIsActive returns false.  This
+      conforms to the Xinerama manual page and fixes an interaction problem with
+      Compiz when there is more than one X screen.
+
+    * Add support for the UseEvents X configuration option on GeForce 8 and
+      higher GPUs.
+
+    * Moved kernel module loading earlier in the X driver's initialization,
+      to facilitate more graceful fallbacks if the kernel module cannot
+      be loaded.  Removed the LoadKernelModule X configuration option.
+
+    * Added support for new horizontal interlaced and checkerboard passive
+      stereo modes.
+
+    * Fixed an OpenGL driver crash while running Bibble 5.
+
+    * Fixed a DisplayPort interaction problem with power management
+      suspend/resume events.
+
+    * Fixed occasional X driver memory management performance problems
+      when a composite manager is running.
+
+    * Fixed a bug with VT-switching or mode-switching while using Compiz;
+      the bug could lead to a corrupted desktop (e.g., a white screen)
+      or in the worst case an X server crash.
+
+    * Fixed a bug that could cause GPU errors in some cases while driving
+      Quadro SDI products.
+
+    * Fixed a several second hang when VT-switching while OpenGL stereo
+      applications were running on pre-G80 Quadro GPUs.
+
+    * Added support for multiple swap group members on G80 and later
+      Quadro GPUs.
+
+    * Fixed the behavior of the NV_CTRL_FRAMELOCK_SYNC_DELAY NV-CONTROL
+      attribute on Quadro G-Sync II.
+    
+    * Fixed a problem with Quadro SDI where transitioning from "clone
+      mode" to "OpenGL mode" would fail.
+
+    * Fixed VDPAU to eliminate some cases of corruption when decoding H.264
+      video containing field-coded reference frames on G84, G86, G92, G94,
+      G96, or GT200 GPUs. Such streams are commonly found in DVB broadcasts.
+
+    * Slightly improved the performance of the VDPAU noise reduction
+      algorithm.
+
+    * Enhanced VDPAU to validate whether overlay usage is supported by the
+      current hardware configuration, and to automatically fall back to the
+      blit-based presentation queue if required.
+
+    * Fixed error checking in VdpVideoMixerRender, to reject calls that
+      specify more layers than the VdpMixer was created with.
+
+    * Modified VDPAU's VDPAU_DEBUG code to emit a complete backtrace on all
+      platforms, not just on 32-bit Linux.
+
+    * Improved interaction between VDPAU and PowerMizer; appropriate
+      performance levels should now be chosen for video playback of all
+      standard resolutions on all supported GPUs.
+
+    * Fixed a bug in VDPAU that sometimes caused "display preemption" when the
+      VdpDecoderCreate function failed.
+
+    * Fixed a potential segfault in the VDPAU trace library, triggered by
+      a multi-threaded application creating a new VdpDevice in one thread,
+      at the same time that another thread detected "display preemption".
+
+  Linux specific changes:
+
+    * Improved compatibility with recent Linux kernels.
+
+  FreeBSD specific changes:
+
+    * Modified VDPAU to dlopen libpthread.so (on all platforms), to avoid
+      conflicts between the current libc and a compat libpthread.
+
+2009-04-06 version 185.19
+
+    * Added support for the following new GPUs:
+
+        Quadro FX 3800
+        Quadro FX 1800
+        Quadro FX 380
+        Quadro FX 580
+        GeForce GTS 250
+        GeForce GT 140
+        GeForce GT 130
+        GeForce 9600 GSO 512
+
+    * Fixed SDI presentation time queries returning unexpected values.
+
+    * Removed the 'AllowDFPStereo' X config file option, which is now enabled by
+      default.
+
+    * Fixed a bug that caused certain programs to hang when multiple threads
+      call functions in libdl at the same time.
+
+    * Fixed a driver crash when OpenGL applications use an extremely large
+      number of textures.
+
+    * Fixed GPU errors triggered by text rendering to PseudoColor windows with
+      the glyph cache enabled.
+
+    * Updated the X driver to allow pixmaps smaller than 32x32 pixels to be
+      placed in video memory.
+
+    * Fixed a problem that prevented the driver from retraining a DisplayPort
+      link after a device was hotplugged.
+
+    * Updated nvidia-bug-report.sh to automatically gzip the resulting log file.
+
+    * Fixed VDPAU to eliminate some cases of GPU hangs when decoding H.264
+      video on G84, G86, G92, G94, G96, or GT200 GPUs, and supplying a DPB
+      missing some reference frames.
+
+    * The VDPAU presentation queue now syncs to VBLANK in the blit
+      path. The environment variable VDPAU_NVIDIA_SYNC_DISPLAY_DEVICE
+      selects which display to sync to when TwinView is enabled;
+      see the README for details.
+
+    * On systems using integrated graphics, VDPAU now uses system RAM
+      instead of video RAM for many purposes. This should prevent "out
+      of resources" problems in most cases, even when the video RAM
+      carve-out is configured as low as 128M.
+
+    * Added support for Quad-Buffered Stereo in the main plane
+      simultaneously with the Color Index Overlay; i.e., both Stereo
+      GLX FBConfigs and Color Index Overlay FBConfigs can be advertised
+      and used at the same time, though no single GLX FBConfig contains
+      both Stereo and Overlay capabilities.
+
+2009-03-12 version 185.13
+
+    * Numerous internal cleanups and improvements to OpenGL. In particular,
+      GLX_EXT_texture_from_pixmap binding performance problems were resolved.
+
+2009-04-21 version 180.51
+
+    * Added support for the following GPUs:
+
+        GeForce 9600 GSO 512
+        GeForce 9400 GT
+        GeForce GTS 250 
+        GeForce GT 130  
+        GeForce GT 140  
+
+    * Fixed stability problems with some GeForce 6200/7200/7300 GPUs
+      on multi-core/SMP systems.
+
+    * Updated nvidia-bug-report.sh to compress its log file; running
+      `nvidia-bug-report.sh` now produces "nvidia-bug-report.log.gz".
+
+    * Addressed a problem that could lead to intermittent hangs
+      and system crashes on some GeForce 9 and later GPUs.
+
+    * Fixed an X server crash when viewing the website www.tim.it.
+
+    * Fixed a DisplayPort interaction problem with power management
+      suspend/resume events.
+
+    * Fixed rendering corruption in the OpenGL 16-bit RGB Workstation
+      Overlay.
+
+    * Fixed a recent VDPAU regression that caused aborted playback
+      and hangs when decoding some H.264 clips on G84, G86, G92, G94,
+      G96, and GT200 GPUs.
+
+    * Fixed an interaction problem that could corrupt the EDID of the
+      Fujitsu Technology Solutions Celsius H270 notebook's internal
+      flatpanel.
+
+    * Fixed occasional X driver memory management performance problems 
+      when a composite manager is running.
+
+    * Fixed a bug that could interfere with the detection of display
+      devices attached to secondary GPUs when first starting X
+      after cold boots.
+
+    * Fixed a problem that could result in temporary stalls when
+      moving OpenGL application windows on GeForce 8 and
+      later GPUs.
+
+    * Fixed a bug that prevented VGA fonts from being saved/restored
+      correctly on GeForce 8 and later GPUs.
+
+  Linux specific changes:
+
+    * Improved compatibility with recent Linux kernels.
+
+    * Reduced CPU usage of nvidia-smi utility for reporting Quadro Plex
+      information.
+
+    * Fixed compatibility problem with LandMark GeoProbe.
+
+  Solaris specific changes:
+
+    * Fixed Solaris installer to not install libnvidia-wfb.so when a wfb
+      library is already present.
+
+    * Fixed an initialization ordering bug that could lead to
+      kernel panics starting X on some integrated GPUs. 
+
+2009-03-30 version 180.44
+
+    * Added support for the following GPUs:
+
+        Quadro FX 3800
+        Quadro FX 3700M
+        Quadro FX 1800
+        Quadro FX 580
+        Quadro FX 380
+        Quadro NVS 295
+        GeForce GT 120
+        GeForce G100
+
+    * Fixed a problem that could cause Xid errors and display corruption
+      in certain cases when OpenGL is used to render to redirected windows,
+      for example when Java2D is used with the -Dsun.java2d.opengl=true
+      option.
+
+    * Updated glGetStringi(GL_EXTENSIONS, i) to no longer return NULL
+      in OpenGL 3.0 preview contexts.
+
+    * Fixed OpenGL crashes while running KDE4's Plasma.
+
+    * Fixed OpenGL crashes when using a large number of texture objects.
+
+    * Fixed the timestamp reporting in the GL_NV_present_video extension
+      on SDI II with Quadro FX 4800 and 5800.
+
+    * Improved power management support on some systems, such
+      as Hewlett-Packard xw4600 workstations.
+
+    * Fixed a problem that caused the screen to flicker momentarily when
+      OpenGL applications exit unexpectedly on GeForce 6 and 7 series GPUs.
+
+    * Fixed an X server crash when an X client attempts to draw trapezoids
+      and RenderAccel is disabled.
+
+    * Improved recovery from certain types of errors.
+
+    * Fixed a bug that caused Autodesk Maya to freeze when overlays
+      are enabled.
+
+    * Fixed an interaction problem between OpenGL and memory tracking
+      libraries such as MicroQuill SmartHeap.
+
+    * Added support for RG renderbuffers in OpenGL 3.0.
+
+    * Added support for OpenGL 3.0 floating-point depth buffers.
+
+    * Fixed a problem that caused Valgrind to crash when tracing a
+      program that uses OpenGL.
+
+    * Updated VDPAU to support VC-1/WMV acceleration on all GPUs supported
+      by VDPAU; see the README for details.
+
+    * Fixed VDPAU corruption on some H.264 clips.
+
+    * Updated VDPAU documentation in the README and in vdpau.h,
+      in particular regarding how to use the deinterlacing algorithms
+      in the VdpVideoMixer object.  Explicitly documented "half rate"
+      deinterlacing, which should allow the advanced algorithms to run
+      on more low-end systems.
+
+    * Implemented a "skip chroma deinterlace" option in VDPAU,
+      which should allow the advanced deinterlacing algorithms to run
+      on more low-end systems. See vdpau.h.
+
+    * Fixed VDPAU VC-1 decoding on 64-bit platforms.
+
+    * Updated the VDPAU wrapper library to print dlerror() messages
+      when driver loading problems occur.
+
+    * Improved VDPAU's handling of some corrupt H.264 streams, and some
+      corrupt/invalid MPEG streams on some GPUs.
+
+    * Fixed VDPAU to correctly handle WMV "range reduction" on
+      some GPUs. A minor backwards-compatible API change was made
+      for this; see vdpau.h's documentation for structure field
+      VdpPictureInfoVC1.rangered.
+
+    * Fixed a problem that caused surfaces to be marked as visible
+      too early when the blit presentation queue is in use.
+
+    * Fixed VDPAU to prevent some cases of "display preemption"
+      in the face of missing H.264 reference frames on some GPUs.
+
+    * Fixed corruption decoding H.264 clips with pictures where
+      pic_order_cnt_type implies log2_max_pic_order_cnt_lsb_minus4 is
+      not used, on G84, G86, G92, G94, G96, GT200 GPUs.
+
+    * Update vdpau.h to document exact requirements for VdpDecoderRender
+      bitstream data content.
+
+    * Fix VDPAU error handling in some unusual low memory situations.
+
+    * Fix hang in VDPAU in some cases of output mode timing changes.
+
+    * Fixed a bug where setting SLI to "auto" in the X configuration
+      file would disable SLI.
+
+2009-02-11 version 180.29
+
+    * Added support for the following GPUs:
+
+        GeForce GTX 295
+        GeForce GTX 285
+        GeForce 9300 GE
+        Quadro NVS 420
+
+    * Added support for OpenGL 3.0 for GeForce 8 series and newer GPUs.
+
+    * Fixed a bug that caused VDPAU to display a green screen when
+      using the overlay-based presentation queue with interlaced
+      modes.
+
+    * Fixed a bug that prevented VDPAU from working correctly
+      after X server restarts on some GPUs.
+
+    * Improved VDPAU's handling of mode switches; eliminated a crash
+      in its mode switch recovery code and a hang in the
+      blit-based presentation queue.
+
+    * Fixed a bug that caused VDPAU to crash when using DisplayPort
+      devices.
+
+    * Fixed a potential hang in VDPAU when using the blit-based
+      presentation queue on systems with multiple GPUs not
+      in SLI mode.
+
+    * Implemented missing error checking of layer data in VDPAU's
+      VdpVideoMixerRender function.
+
+    * Improved VDPAU's handling of setups with multiple GPUs, if
+      a subset of the GPUs cannot be supported due to
+      resource limitations.
+
+    * Improved GPU video memory management coordination between the
+      NVIDIA X driver and VDPAU.
+
+    * Fix potential hang in VDPAU when the overlay is already in use.
+
+    * Improved workstation OpenGL performance.
+
+    * Fixed an X driver acceleration bug that resulted in Xid errors
+      on GeForce 6 and 7 series GPUs.
+
+    * Updated the X driver to consider GPUs it does not recognize
+      supported, allowing it to drive some GPUs it previously
+      ignored.
+
+    * Added the ability to run distribution provided pre- and post-
+      installation hooks to 'nvidia-installer'; please see the
+      'nvidia-installer' manual page for details.
+
+    * Updated the X driver's metamode parser to allow mode names
+      with periods (i.e. '.'s).
+
+    * Fixed a problem in VDPAU that prevented the overlay-based
+      presentation queue from being used on displays connected by component
+      video.
+
+    * Fixed various problems in VDPAU that caused visual corruption when
+      decoding certain MPEG-2 video streams.
+
+    * Fixed a crash in VDPAU caused by certain invalid MPEG-2 streams,
+      in 64-bit drivers for some GPUs.
+
+    * Fixed an X driver performance problem on integrated GPUs.
+
+    * Fixed a stability problem with OpenGL applications using FSAA.
+
+    * Fixed an initialization problem that caused some AGP
+      GPUs to be used in PCI compatibility mode.
+
+    * Fixed a bug that could result in stability problems
+      after changing clock settings via the Coolbits
+      interface.
+
+  Linux specific changes:
+
+    * Fixed a problem with hotkey switching on some recent
+      mobile GPUs.
+
+    * Worked around a power management regression in and improved
+      compatibility with recent Linux 2.6 kernels.
+
+2009-01-08 version 180.22
+
+    * Added support for the following GPUs:
+
+        Quadro FX 2700M
+        GeForce 9400M G
+        GeForce 9400M
+        GeForce 9800 GT
+        GeForce 9800 GT
+        GeForce 8200M G
+        GeForce Go 7700
+        GeForce 9800M GTX
+        GeForce 9800M GT
+        GeForce 9800M GS
+        GeForce 9500 GT
+        GeForce 9700M GT
+        GeForce 9650M GT
+        GeForce 9500 GT
+
+    * Added initial support for PureVideo-like features via the new
+      VDPAU API (see the vdpau.h header file installed with the driver).
+
+    * Added support for CUDA 2.1.
+
+    * Added preliminary support for OpenGL 3.0.
+
+    * Added new OpenGL workstation performance optimizations.
+
+    * Enabled the glyph cache by default and extended its support to 
+      all supported GPUs.
+
+    * Disabled shared memory X pixmaps by default; see
+      the "AllowSHMPixmaps" option.
+
+    * Improved X pixmap placement on GeForce 8 series and later GPUs.
+
+    * Improved stability on some GeForce 8 series and newer GPUs.
+
+    * Fixed a regression that could result in window decoration corruption
+      when running Compiz using Geforce 6 and 7 series GPUs.
+
+    * Fixed an nvidia-settings crash when xorg.conf contains Device
+      and Screen sections but no ServerLayout section.
+
+    * Fixed a problem parsing the monitor sync range X config file
+      options.
+
+    * Fixed a problem with the SDI sync skew controls in
+      nvidia-settings.
+
+    * Fixed a problem that caused some SDI applications to hang or
+      crash.
+
+    * Added support for SDI full-range color.
+
+  Linux specific changes:
+
+    * Improved compatibility with recent Linux kernels.
+
+  FreeBSD specific changes:
+
+    * Fixed a problem that caused the Linux OpenGL library to crash
+      when used inside FreeBSD's Linux emulation layer.
+
+2008-11-12 version 177.82
+
+    * Added support for the following new GPUs:
+        Quadro NVS 450
+        Quadro FX 370 LP
+        Quadro FX 5800
+        Quadro FX 4800
+        Quadro FX 470
+        Quadro CX
+
+    * Fixed a problem on recent mobile GPUs that caused a power management
+      resume from S3 to take 30+ seconds.
+
+    * Fixed an image corruption issue seen in FireFox 3.
+
+  Linux specific changes:
+
+    * Fixed a problem with hotkey switching on some recent mobile GPUs.
+
+2008-10-07 version 177.80
+
+    * Added support for the following new GPUs:
+
+        GeForce GTX 260
+        GeForce GTX 280
+        GeForce 9800 GTX+
+        GeForce 9800 GT
+        GeForce 9700M GTS
+        GeForce 9500 GT
+        GeForce 8100P
+        nForce 780a SLI
+        nForce 750a SLI
+        Quadro FX 770M
+        Quadro NVS 160M
+        Quadro NVS 150M
+
+    * Improved support for RENDER masks, as well as RENDER repeating
+      modes and transformations, for video memory pixmaps.
+
+    * Added accelerated support for RENDER convolution filters for
+      video memory pixmaps on GeForce 8, 9 and GTX GPUs.
+
+    * Improved support for RENDER operations with the same source
+      and destination; this should performance in some
+      situations, e.g. when dragging Plasma applets in KDE4.
+
+    * Improved GPU video memory management coordination between the
+      NVIDIA X driver and OpenGL implementation; this should
+      improve performance with e.g. the KDE4 OpenGL compositing
+      manager.
+
+    * Added an 'AllowSHMPixmaps' X configuration option, which can
+      be used to prevent applications from using shared memory
+      pixmaps; the latter may cause some optimizations in the NVIDIA
+      X driver to be disabled.
+
+    * Fixed a text rendering performance regression that affected
+      GeForce 6 and 7 series GPUs.
+
+    * Fixed a regression that caused the 'Auto' SLI X option
+      setting to not enable SLI.
+
+    * Fixed a bug that caused system hangs when using the NV-CONTROL
+      interface to change GPU clock frequencies.
+
+    * Added support for DisplayPort display devices (including
+      30-bit devices).
+
+    * Resolved various stability problems on GeForce 8, 9 and GTX
+      GPUs, as well as some GeForce 6 and 7 PCI-E GPUs.
+
+    * Fixed a bug that resulted in GPU errors when changing the
+      TwinView display configuration while using Compiz.
+
+    * Further improved the error recovery paths taken in case of GPU
+      command stream corruption.
+
+    * Updated mode validation, in cases when no EDID is detected,
+      such that 1024x768 @ 60Hz and 800x600 @ 60Hz are
+      allowed, rather than just 640x480 @ 60Hz.
+
+    * Removed an old workaround that caused incorrect Xinerama
+      information to be reported after enabling a second
+      TwinView display.
+
+    * Fixed corruption when using SLI in SFR mode with
+      OpenGL-based composite managers.
+
+    * Fixed the subpicture component order reported by the NVIDIA
+      X driver's XvMC implementation.
+
+    * Added a workaround for broken EDIDs provided by some Acer
+      AL1512 monitors.
+
+    * Fixed a bug that caused GLXBadDrawable errors to be generated
+      when running more than one OpenGL application with
+      anti-aliasing enabled on GeForce 6 and 7 GPUs, e.g. wine.
+
+  Linux specific changes:
+
+    * Fixed a problem that could result in IRQs being disabled
+      on some multi-GPU SMP configurations.
+
+    * Worked around cache flushing problems (on some Linux kernels)
+      that caused corruption and stability problems.
+
+    * Added experimental support for PCI-E MSI.
+
+    * Updated the X driver to consider /sys/class/power_supply
+      when determining the AC power state.
+
+    * Fixed a bug that resulted in AGP FW/SBA settings and overrides
+      being applied incorrectly when using the Linux kernel's
+      AGP GART driver.
+
+    * Improved compatibility with recent Linux 2.6 kernels.
+
+  Solaris specific changes:
+
+    * Fixed a bug that caused intermittent kernel panics when stress
+      testing attach/detach paths.
+
+  FreeBSD specific changes:
+
+    * Fixed a bug that caused the kernel module to fail building
+      against some FreeBSD kernels.
+
+    * Fixed a bug that caused the kernel module to fail building
+      with FreeBSD AGPGART support enabled.
+
+    * Resolved an event-handling bug in the X driver responsible for
+      X server crashes upon starting a windowed OpenGL
+      application while using Compiz.
+
+2008-07-30 version 173.14.12
+
+    * Added support for GeForce 8600 GS.
+
+    * Fixed a problem with missing rendering in OpenGL Workstation
+      Overlays.
+
+    * Fixed a problem with running some SDL applications and virtual
+      terminal switching.
+
+    * Fixed a potential crash in nvidia-settings when saving to the X
+      configuration file.
+
+    * Improved error recovery paths in the case of corruption of the
+      commands sent to the GPU.
+
+2008-06-11 version 173.14.09
+
+    * Fixed aliased font rendering corruption on X.Org server 1.5.
+
+    * Fixed a display corruption problem driving two dual-link
+      DFPs with Quadro FX 1700 GPUs.
+
+    * Fixed a regression that prevented the X driver from starting
+      on some GeForce FX, 6 and 7 mobile GPUs.
+
+    * Fixed a locale-interaction issue in the nvidia-settings
+      NV-CONTROL protocol parser.
+
+  Linux specific changes:
+
+    * Added preliminary support for Linux 2.6.26.
+
+  FreeBSD specific changes:
+
+    * Fixed a problem that caused a memory leak when some OpenGL
+      applications are syncing to vblank.
+
+2008-05-28 version 173.14.05
+
+    * Added support for the following new GPUs:
+
+        Quadro FX 3600M
+        GeForce 9800 GX2
+        GeForce 9800 GTX
+        GeForce 9600 GT
+        GeForce 9600 GSO
+        GeForce 9600 GS
+        GeForce 9500M GS
+        GeForce 8400
+        GeForce 8400 GS
+
+    * Added support for Quadro FX 5600/4600 SDI and Quadro
+      G-Sync II.
+
+    * Resolved a bug causing left and right eyes to be reversed
+      in stereo mode on some Quadro FX GPUs.
+
+    * Fixed a problem that caused OpenGL to stop rendering to
+      windows with origins at or beyond 4096 pixels (horizontally)
+      on GeForce 8 and 9 GPUs.
+
+    * Fixed a bug causing some Quadro FX 4500 SDI configurations
+      to take a long time to achieve synchronization.
+
+    * Added preliminary support for X.Org server 1.5.
+
+    * Addressed a problem causing visual corruption when using
+      GeForce 8 GPUs to drive Chi Mei 56" displays.
+
+    * Addressed visual corruption when driving Cintiq 20WSX wide
+      format tables with some GeForce 6 and 7 GPUs.
+
+    * Fixed OpenGL rendering corruption with textures compressed
+      using the DXT5 compression algorithm.
+
+    * Fixed a regression that caused invalid EDIDs to be detected
+      for the internal display device on some notebooks.
+
+    * Improved hotkey switching and power management support on
+      some GeForce 8 notebooks.
+
+    * Fixed a regression causing some GeForce 6100/6150 systems to
+      fail to restore the screen after DPMS cycles.
+
+    * Fixed a bug that prevented the console from being restored
+      correctly in SLI mode on GeForce 6 and 7 GPUs.
+
+    * Fixed interlaced modes on GeForce 8 GPUs.
+
+    * Fixed a problem that caused the synchronization signal
+      polarity to always be positive for DVI devices on
+      GeForce 8 and 9 GPUs.
+
+    * Resolved a problem resulting in X startup to fail on some
+      GeForce 8 and 9 systems without swap space.
+
+    * Fixed a bug resulting in X crashes when using GeForce 8
+      and 9 GPUs in SLI to drive X screens at depth 8.
+
+    * Fixed a problem that caused TV output on secondary TVs to be
+      black and white on some GPUs.
+
+  Linux specific changes:
+
+    * Restored compatibility with recent Linux 2.6 kernels.
+
+  Solaris specific changes:
+
+    * Fixed a bug that could result in kernel panics on SMP systems.
+
+    * Fixed a problem causing multi-threaded JOGL applications to
+      hang on exit.
+
+  FreeBSD specific changes:
+
+    * Resolved a bug that could cause the X driver to crash in
+      various out-of-IPC-resource scenarios; documented common IPC
+      resource related problems in the README.
+
+    * Added initial support for FreeBSD 7.0-RELEASE.
+
+2008-02-26 version 169.12
+
+    * Improved power management support with GeForce 8 GPUs.
+
+    * Further improved stability on some GeForce 8 GPUs.
+
+    * Fixed a bug that broke certain TwinView configurations with
+      TV-OUT on GeForce 8 GPUs.
+
+    * Fixed a bug that could cause OpenGL to crash in certain cases,
+      e.g. when running Counter-Strike under Wine.
+
+    * Further improved GLX_EXT_texture_from_pixmap out-of-memory
+      handling.
+
+    * Fixed a bug that could result in incorrect PowerMizer state
+      being reported.
+
+    * Improved nvidia-xconfig behavior when updating X configuration
+      files without a "Module" section.
+
+    * Worked around a problem that caused function key presses on
+      some Toshiba notebooks to result in system crashes.
+
+  Solaris specific changes:
+
+    * Fixed a bug that caused intermittent kernel panics when stress
+      testing setup/teardown paths.
+
+    * Fixed a problem that could result in X driver crashes when
+      trying to change resolutions with XRandR.
+
+2008-01-21 version 169.09
+
+    * Fixed a problem causing the fan on some GPUs to always run at
+      full speed.
+
+    * Fixed a bug that could lead to X crashes using Paraview's
+      "Save Animation" dialog.
+
+    * Fixed a bug that caused the X driver to crash if the X.Org GLX
+      extension module was loaded instead of NVIDIA's.
+
+    * Improved the X driver's awareness of the current notebook
+      docking status.
+
+    * Fixed brightness control on HP Compaq notebooks.
+
+    * Fixed a bug in the Linux/i2c algorithm driver implementation
+      that prevented core transfer types from succeeding.
+
+2007-12-20 version 169.07
+
+    * Added support for GeForce 8800 GTS 512 and GeForce 8800M.
+
+    * Added CUDA driver to .run file.
+
+    * Fixed several X rendering issues.
+
+    * Fixed problems scrolling ARGB X drawables in Qt.
+
+    * Improved support for interlaced DVI, HDMI, and HDTV modesetting.
+
+2007-11-16 version 169.04
+
+    * Improved glXWaitVideoSyncSGI() latency by using a method asynchronous to
+      graphics commands.  Applications using glXWaitVideoSyncSGI() to
+      synchronize graphics rendering to monitor frame rate will need to
+      call glFinish() before glXWaitVideoSyncSGI().
+
+2007-10-18 version 100.14.19
+
+    * Added support for the GeForce 8800 GT.
+
+    * Improved modesetting support on Quadro/GeForce G8x GPUs.
+
+    * Fixed stability problems with some GeForce 8 GPUs.
+
+    * Fixed stability problems with some GeForce 6200/7200/7300 GPUs
+      on multi-core/SMP systems.
+
+    * Improved hotkey switching support for some Lenovo notebooks.
+
+    * Fixed a problem with Compiz after VT-switching.
+
+    * Improved RENDER performance.
+
+    * Improved interaction with Barco and Chi Mei 56" DFPs, as well
+      as with some Gateway 19" DFPs.
+
+    * Added an interface to monitor PowerMizer state information.
+
+    * Fixed rendering corruption in Maya's Graph Editor.
+
+    * Improved interaction between AFR SLI and swap groups on certain
+      Quadro FX GPUs.
+
+    * Fixed a bug that caused corruption with redirected XV on
+      GPUs without TurboCache support.
+
+    * Improved display device detection on GeForce 8 GPUs.  
+
+    * Improved nvidia-settings usability at lower resolutions like
+      1024x768 and 800x600.
+
+    * Improved GLX visual consolidation when using Xinerama with
+      Quadro/GeForce G8x and older GPUs.
+
+    * Added experimental support for running the X server at Depth 30
+      (10 bits per component) on Quadro G8x and later GPUs.
+
+  Linux specific changes:
+
+    * Worked around a Linux kernel/toolchain bug that caused soft
+      lockup errors when suspending on some Intel systems.
+
+  Solaris specific changes:
+
+    * Fixed a bug that prevented stereo from being enabled properly 
+      on some Quadro FX GPUs.
+
+  FreeBSD specific changes:
+
+    * Fixed a problem that could cause crashes on SMP systems.
+
+2007-09-18 version 100.14.19
+
+    * Added support for new GPUs:
+
+        Quadro NVS 290
+        Quadro FX 370
+        Quadro FX 570
+        Quadro FX 1700
+
+    * Improved GLX_EXT_texture_from_pixmap out-of-memory handling.
+
+    * Fixed a performance regression on GeForce 8 GPUs.
+
+    * Added support for a 'NoScanout' mode to the X driver, useful for
+      high performance computing environments and remote graphics; please
+      see the 'UseDisplayDevice' option description for details.
+
+    * Improved power management support with GeForce 8 and older GPUs.
+
+    * Improved compatibility with recent X.Org X servers.
+
+    * Improved G-Sync support with Quadro FX 4600 and Quadro FX 5600.
+
+    * Added XV brightness and contrast controls to the GeForce 8
+      video texture adapter implementation.
+
+    * Further improved interaction with ATi RS480/482 based mainboards.
+
+    * Fixed stability problems with some GeForce 8 GPUs.
+
+    * Fixed XvMC support on GeForce 7050 PV / NVIDIA nForce 630a GPUs
+      with PureVideo support.
+
+    * Added support for bridgeless SLI with GeForce 8 GPUs.
+
+    * Fixed rotation support on some GeForce 8 GPUs.
+
+    * Fixed a problem causing X to render incorrectly after VT switches
+      with composited desktops.
+
+    * Fixed a RENDER acceleration bug that was causing 2D rendering
+      corruption in Eclipse with GeForce 8 GPUs.
+
+    * Improved VGA console restoration with DFPs and TVs.
+
+    * Fixed a bug that resulted in the generation of incorrect EDIDs
+      on some notebooks.
+
+    * Fixed flickering corruption with SLIAA on GeForce 8 GPUs.
+
+  Linux specific changes:
+
+    * Improved compatibility with recent Linux 2.6 kernels.
+
+    * Fixed a compatibility problem with some Linux 2.4 kernels.
+
+    * Improved hotkey switching support.
+
+    * Fixed an 'nvidia-installer' bug that was causing the installer
+      to treat some of its temporary files as conflicting.
+
+    * Fixed several problems causing crashes if /dev is mounted
+      with the 'noexec' option.
+
+    * Reduced kernel virtual memory usage with some GeForce 8 GPUs.
+
+  FreeBSD specific changes:
+
+    * Fixed installation problems on systems with modular X.Org
+      X servers.
+
+    * Fixed X driver event delivery problems interfering with event
+      driven features like DamageEvents.
+
+  Solaris specific changes:
+
+    * Fixed a bug that occasionally caused crashes at kernel module
+      unload time.
+
+2007-06-21 version 100.14.11
+
+    * Added support for new GPUs:
+
+        GeForce 7050 PV / NVIDIA nForce 630a
+        GeForce 7025 / NVIDIA nForce 630a
+
+    * Fixed console restore problems in several different configurations:
+
+        Quadro FX 4400 SLI
+        VESA console
+        Notebook LCD displays
+
+    * Improved interaction with ATi RS480/482 based mainboards.
+
+    * Improved support for House Sync with G-Sync II.
+
+    * Improved NVIDIA X driver interaction with ACPI daemon.
+
+2007-06-08 version 100.14.09
+
+    * Added support for new GPUs:
+
+        GeForce 8600 GTS
+        GeForce 8600 GT
+        GeForce 8600M GT
+        GeForce 8600M GS
+        GeForce 8500 GT
+        GeForce 8400 GS
+        GeForce 8400M GT
+        GeForce 8400M GS
+        GeForce 8400M G
+        GeForce 8300 GS
+        Quadro FX 1600M
+        Quadro FX 570M
+        Quadro FX 360M
+        Quadro NVS 320M
+        Quadro NVS 140M
+        Quadro NVS 135M
+        Quadro NVS 130M
+
+    * Added support for G-Sync with Quadro FX 4600 and Quadro FX 5600.
+
+    * Improved Notebook support. 
+
+    * Improved RenderAccel support for subpixel antialiased fonts.
+
+    * Added XV brightness and contrast controls for GeForce 8 GPUs.
+
+    * Improved interaction with newer Linux kernels.
+
+    * Fixed a locale-interaction issue in the nvidia-settings
+      configuration file parser.
+
+2007-03-07 version 1.0-9755
+
+    * Added support for Quadro FX 4600 and Quadro FX 5600.
+
+    * Added support for SLI with GeForce 8800, Quadro FX 4600,
+      and Quadro FX 5600.
+
+2006-12-21 version 1.0-9746
+
+    * Added support for GeForce 8800 GTX and GeForce 8800 GTS GPUs.
+
+2006-12-04 version 1.0-9631
+
+    * Fixed an OpenGL crash on some GeForce 3 and GeForce 4 GPUs.
+
+    * Fixed an X server crash starting some fullscreen OpenGL games.
+
+    * Improved interaction with newer Linux kernels.
+
+2006-11-07 version 1.0-9629
+
+    * Added initial support for GLX_EXT_texture_from_pixmap.
+
+    * Added new "Display Configuration" page in nvidia-settings.
+
+    * Improved workstation OpenGL performance in Xinerama.
+
+    * Added support for NVIDIA Quadro Plex.
+
+    * Added support for Quad SLI.
+
+    * Improved X driver error recovery.
+
+    * Improved workstation overlay performance.
+
+    * Added SMBus functionality to the Linux/i2c interface.
+
+    * Fixed DFP scaling support.
+
+    * Added support for OpenGL 2.1.
+
+    * Added new "TwinViewXineramaInfoOrder" X configuration option to
+      control the order of display devices when in TwinView.
+
+    * Fixed some problems related to TV Out.
+
+    * Added new NVIDIA logo artwork to nvidia-settings and X driver
+      splashscreen; the X driver splashscreen can now be configured
+      with the new "LogoPath" X configuration option.
+
+2006-10-19 version 1.0-8776
+
+    * Fixed Security Advisory R7-0025.
+
+2006-08-24 version 1.0-8774
+
+    * Added support for X.Org 7.1.
+
+    * Added support for XVideo with the Composite X extension when
+      using X.Org 7.1.
+
+    * Improved interaction with newer Linux kernels.
+
+2006-05-22 version 1.0-8762
+
+    * Added support for new GPUs, such as QuadroFX 4500 X2, Quadro FX
+      5500, Quadro FX 3500, and Quadro FX 1500.
+
+    * Improved Quadro FX 3450/4000 SDI support.
+
+    * Fixed video memory reporting with GeForce 6200 Turbo Cache.
+
+    * Fixed a problem with Overlay support when in TwinView.
+
+    * Fixed problems starting X with SLI Frame Rendering on nForce 4
+      SLI Intel Edition.
+
+    * Fixed multiple issues with combinations of Stereo, SLI,
+      FrameRendering and G-Sync.
+
+    * Fixed several issues with mode selection for CRTs and DFPs.
+
+    * Fixed a corruption problem with Rotation and large desktops on
+      older GPUs, including GeForce4 MX.
+
+    * Fixed a system crash starting X with TwinView on certain GPUs.
+
+    * Addressed an NV-CONTROL compatibility issue; please see the Known
+      Issues section of the README for details.
+
+2006-04-07 version 1.0-8756
+
+    * Added support for GeForce 7300, GeForce 7400, GeForce 7600 and
+      GeForce 7900.
+
+    * Added support for running OpenGL applications while the
+      Composite X extension is enabled; see "The X Composite Extension"
+      appendix for details.
+
+    * Enabled hardware acceleration of the Render X extension by default.
+
+    * Added "AddARGBGLXVisuals" X configuration option, so that OpenGL
+      applications can render to X Windows' alpha channel.
+
+    * Added Linux/i2c support to the NVIDIA kernel module; see the "i2c
+      Bus Support" appendix for details.
+
+    * Improved power management support with Linux >= 2.6.14 and
+      added support for suspend-to-disk.
+
+    * Added new "nvidia-auto-select" mode entry for use in the X
+      configuration file; see description in the "Programming Modes"
+      appendix.
+
+    * Added support for GLX 1.4.
+
+    * Added ability for OpenGL applications to span greater than
+      4096 pixels when in Xinerama.
+
+    * Improved G-Sync support.
+
+    * Fixed interlaced modes on CRTs.
+
+    * Improved compatibility with the latest Linux 2.6 kernels.
+
+2005-12-22 version 1.0-8178
+
+    * Fixed a problem where certain precompiled kernel interfaces were
+      not recognized.
+
+    * Improved stability with the Composite X extension.
+
+    * Fixed a corruption bug with RenderAccel and the Composite X
+      extension when using wide desktops.
+
+    * Fixed a problem validating HDTV modes on GeForce 6200.
+
+    * Fixed detection of certain older TV encoders.
+
+    * Fixed installation problems with Linux kernel source trees
+      using separate KBUILD output directories.
+
+    * Fixed installation problems on newer Debian systems.
+
+2005-12-05 version 1.0-8174
+
+    * Added support for SLI FrameRendering.  Please see the README
+      for details.
+
+    * Added support for new GPUs such as the GeForce 6100 and GeForce 6150.
+
+    * Added a new utility 'nvidia-xconfig', which is a commandline
+      tool for updating X configuration files.
+
+    * Added manpages for 'nvidia-xconfig', 'nvidia-settings', and
+      'nvidia-installer'.
+
+    * Improved workstation OpenGL performance on Solaris.
+
+    * Made UseEdidFreqs "on" by default; the NVIDIA X driver will
+      use the valid HorizSync and VertRefresh frequency ranges from the
+      EDID whenever possible.
+
+    * Added support for Stereo Digital Flat Panels such as the SeeReal
+      and Sharp3D DFPs.
+
+    * Added HTML version of the README.
+
+    * Added support for static Rotation; see the "Rotate" X config option
+      in the README.
+
+    * Improved stability on 64-bit Linux 2.6 kernels.
+
+    * Fixed driver installation when SELinux is enabled.
+
+2005-08-02 version 1.0-7676
+
+    * Improved GeForce 7800 GTX performance.
+
+2005-06-22 version 1.0-7667
+
+    * Added support for GeForce 7800 GTX.
+
+    * Fixed problem with certain flatpanels running at 1600x1200.
+
+    * Fixed an unresolved symbol issue in libXvMCNVIDIA.so.
+
+    * Fixed an unresolved reference to the symbol "gnu_dev_makedev".
+
+    * Worked around a bug in Java2D that was exposed in 1.0-7664.
+
+    * Improved support for Quadro FX 4000 SDI.
+
+2005-06-01 version 1.0-7664
+
+    * Install NVIDIA OpenGL headers by default.
+
+    * Fixed performance problem when using AGPGART.
+
+    * Fixed support for GeForce2 Integrated GPUs.
+
+    * Fixed a workstation graphics stability problem.
+
+    * Improved XRandR rotation support.
+
+    * Fixed installation problems on some Linux 2.6 kernels.
+
+2005-03-11 version 1.0-7167
+
+    * Improved OpenGL workstation performance.
+
+    * Added support for XRandR rotation; see Appendix W in the text README.
+
+    * Added ExactModeTimingsDVI X config option to give explicit control
+      over the mode timings used on FlatPanels.
+
+    * Added X.Org dlloader support.
+
+    * Changed driver behavior such that PAT (Page Attribute Table)
+      is used where possible instead of MTRRs.
+
+    * Added a workaround for an X server bug with PCI-E GeForce 6800
+      and GeForce 6600; a fix has been provided to XFree86 and X.Org.
+
+    * Fixed stability problems on x86_64 PCI-E systems.
+
+    * Documented change_page_attr problems with x86_64 2.6 kernels;
+      please see the known issue "The X86-64 platform (AMD64/EM64T)
+      and 2.6 kernels" in the text README here:
+
+        /usr/share/doc/NVIDIA_GLX-1.0/README
+
+    * Fixed 2D rendering corruption on certain older GPUs.
+
+    * Improved compatibility with Linux 2.6 kernels.
+
+    * Fixed compatibility problems with some SWIOTLB em64t systems.
+
+    * Fixed a bug that triggered error messages of the form:
+
+        "ioctl32(doom.x86:6747): Unknown cmd fd(16) cmd(c0384642){00}
+            arg(ffffc75c) on /dev/nvidiactl"
+
+    * Fixed NvAGP incompatibility with recent Linux 2.6 kernels.
+
+    * Improved interaction with the udev filesystem.
+
+    * Improved performance of PCI cards on Linux 2.6 systems.
+
+    * Support for TurboCache GPUs.
+
+2004-11-5 version 1.0-6629
+
+    * Added support for GeForce 6600 and GeForce 6600 GT.
+
+    * Added support for Quadro FX 4000 SDI
+
+    * Added support for 512 MB framebuffers.
+
+    * Improved support for GLSL (OpenGL Shading Language).
+
+    * Improved performance for VBO (OpenGL Vertex Buffer Objects).
+
+    * Improved support for Linux 2.6 kernels.
+
+    * Improved support for PCI Express.
+
+    * Reduced virtual address space consumption in OpenGL applications.
+
+    * Updated documentation.  Please see the file
+
+        /usr/share/doc/NVIDIA_GLX-1.0/README
+
+      There are new known issues on EM64T and multithreaded
+      application stability as well as new appendices:
+
+        (app-s)  APPENDIX S: POWER MANAGEMENT SUPPORT
+        (app-t)  APPENDIX T: DISPLAY DEVICE NAMES
+        (app-u)  APPENDIX U: THE COMPOSITE X EXTENSION
+
+    * Improved support for EM64T Linux/x86-64 systems
+
+    * Improved support for RenderAccell
+
+    * Improved performance for Java2D.
+
+2004-8-5 version 1.0-6111
+
+  * Fixed SoftImage certification issues.
+
+    * Made the the "Do you really want to quit?" dialog in nvidia-settings
+      optional (via the nvidia-settings Configuration page).
+
+    * Fixed problem that prevented multiple simultaneous X servers
+      from running on TNT/TNT2.
+
+    * Fixed problem that caused TV-Out modes other than 640x480 and
+      800x600 to be unavailable.
+
+    * Fixed problem that caused cursor misplacement/corruption in
+      certain TwinView configurations.
+
+    * Fixed problem that caused some AGP kernel module options to
+      be ignored.
+
+    * Fixed problem in GLSL with shadow2DProj.
+
+    * Fixed console restore problems on GeForce4 Ti.
+
+2004-6-30 version 1.0-6106
+
+    * Added support for GLSL (OpenGL Shading Language).
+
+    * Added support for GL_EXT_pixel_buffer_object.
+
+    * Added support for 4kstack kernels.
+
+    * Added configuration utility "nvidia-settings"; see the user guide
+      installed here:
+
+        /usr/share/doc/NVIDIA_GLX-1.0/nvidia-settings-user-guide.txt
+
+      for details.
+
+    * Added support for running 32bit OpenGL applications on 64bit AMD64
+      Linux installations.
+
+    * Fixed problem that prevented 32bit kernel driver from running on
+      certain AMD64 CPUs.
+
+    * Added a new Xv adaptor on GeForce4 and GeForceFX which uses the 
+      3D engine to do Xv PutImage requests.  This allows XvMC to operate
+      when the video overlay is not available (such as in TwinView).
+      XvMC still uses the overlay by default, when available.  A new
+      XF86Config option "XvmcUsesTextures" has been added to force
+      usage of the 3D engine for XvMCPutSurface even when overlays are 
+      available.
+
+    * Added a shell script "nvidia-bug-report.sh" that gathers
+      system configuration information into a log file; the resulting
+      log file (nvidia-bug-report.log) should be included when reporting
+      bugs to NVIDIA.
+
+2004-1-26 version 1.0-5336
+
+    * Added support for Linux 2.6 kernels.
+
+    * Fixed a problem that caused kernels oops, black screens, and agp
+      failures on some VIA motherboards.
+
+    * Fixed a typo in the NVIDIA-provided libGL.la.
+
+    * Fixed a problem that prevented X from running on Samsung X10 laptops.
+
+    * Deprecated the "--kernel-include-path" .run commandline option,
+      in favor of "--kernel-source-path".
+
+2003-12-22 version 1.0-5328
+
+    * Added support for UBB and FSAA Stereo.
+
+    * Improved GLXPixamp support.
+
+    * Added support for Red Hat Advanced Workstation 3.0.
+
+    * Added support for GLX_SGI_swap_control.
+
+    * Added an OS ABI ELF Note to the OpenGL libraries.
+
+    * Fix a problem where the video overlay would sometimes stop working 
+      when displaying HDTV resolutions.
+
+    * For graphics cards that require a power connector but do not have
+      a connector plugged in, fail X screen initialization, rather than
+      just print a warning message.
+
+    * Reduced CPU usage when OpenGL applications are syncing to vblank.
+
+2003-7-28 version 1.0-4496
+
+    * Improved OpenGL performance when rendering to multiple
+      buffers (such as when using a stereo visual and rendering to
+      GL_LEFT_AND_RIGHT).
+
+    * Initial support for APM power management.
+
+    * Fixed some RENDER related corruption reported with GTK+ 2.2.2.
+
+    * Added support for Active Stereo + TwinView.
+
+    * Fixed a hang on GeForce2 that occurred when using RENDER extension
+      acceleration on some apps such as OpenOffice.
+
+2003-4-24 version 1.0-4363
+
+    * Fixed a problem that prevented running multiple X servers on 
+      different virtual terminals.
+
+    * Improved IDCT level acceleration in XvMC.
+
+    * Fixed a 2D performance slowdown experienced by many people.
+
+2002-12-11 version 1.0-4191
+
+    * Added support for FSAA with UBB.
+
+    * Support for OpenGL 1.4
+
+    * Finished GLX 1.3 support
+
+    * Support for AGP 3.0
+
+    * Improved support for NForce2
+
+    * Added support for NV30 and NV30 extensions.
+
+    * Fixed bug where there was corruption at the borders of a pbuffer
+
+    * More complete acceleration for the XRENDER extension.  Due to the
+      experimental nature, RENDER acceleration is now disabled by default
+      (Option "RenderAccel" enables it).
+
+    * The driver no longer uses the XFree86 Acceleration Architecture (XAA),
+      but provides its own 2D acceleration architecture to better accomodate
+      the needs of simultaneous 3D and 2D rendering.
+
+    * Added color index overlay emulation on Quadro4.
+
+    * Added support for separate X screens on a single GPU (supported
+      by all GPUs that support TwinView).
+
+2002-9-10 version 1.0-3123
+
+    * Added support for NV18, NV28 and nForce 2.
+
+    * Added Quadbuffered workstation stereo visuals for Quadro2, 4 and
+      Quadro DCC.
+
+    * Improved Viewperf numbers.
+
+    * Added support for up to 16 monitors.
+
+    * Added support for T221 panel.
+
+    * Added support for RGB OpenGL overlays in TwinView on NV25/28.
+
+    * Added support for hardware clip ids on Quadro4 parts.  Option "UseClipIDs"
+      enables them.
+
+2002-5-23 version 1.0-2960
+
+    * Fixed problem with loading the GLX extension in multi-head
+      environments with non-NVIDIA video cards.
+
+    * Significant performance improvements in Viewperf on Quadro parts.
+
+    * Added option "NoRenderExtension" to disable the RENDER extension.
+      This is useful in 8bpp where the RENDER extension will preallocate
+      a large portion of the default colormap and break many legacy 
+      applications.
+
+    * Fixed a regression where I420 XvImages had the chroma planes swapped.
+
+    * Fixed some problems with moving overlay windows.
+
+    * Added a dynamic XvMC library "libXvMCNVIDIA_dynamic.so" so that 
+      applications can dynamically load the vendor-specific core XvMC
+      support.
+
+    * Added XvMC motion-compensation acceleration for NV25 and fixed
+      some bugs in the NV17 XvMC support.
+
+    * Fixed some problems with FSAA modes failing.
+
+2002-4-3 version 1.0-2880
+
+    * Fixed rendering problems which occurred in some cases when 
+      GL_SYNC_TO_VBLANK was enabled.
+
+    * Fixed problem where the maximum pixel clock was set too low.
+      
+    * Fixed a problem with image flicker when running full-screen apps
+      on GeForce4.
+  
+    * Fixed a pixmap cache corruption problem on GeForce3.
+
+    * Fixed some issues running multiple NVIDIA graphics cards simultaneously.
+
+2002-3-7 version 1.0-2802
+
+    * Support for anisotropic filtering.
+
+    * Provide libXvMCNVIDIA.a which is an implementation of XvMC 1.0.
+      This allows mpeg acceleration on NV17 chips and NV17 chips only.
+
+    * RGB Workstation overlays for Quadro4.  These are double buffered,
+      Z-buffered 16 bit visuals.  The transparency key is 0x0000 hex.
+
+    * NV17 and NV25 support.
+
+    * Added an 8:8:8:8 XRGB XvImage format to the video blitter.
+
+    * Config file option for Digital Vibrance Control.
+     
+    * Added new XF86Config option "FlatPanelProperties" to control dithering 
+      and scaling when X is started.
+
+    * Added support for SoftEDID's. When enabled the driver will generate 
+      an EDID based on the video bios isntead of doing a table lookup.
+
+    * Improved Crush support
+
+    * Fixed problem with using SGIX_fbconfig and SGIX_pbuffer with 
+      indirect rendering (protocol was incorrect)
+
+    * Fixed problem where the driver would fail on systems with >= 1GB 
+      of memory and a kernel configured to use all the memory.
+
+2001-11-26 version 1.0-2313
+
+    * Got Crush working.
+
+    * OpenGL 1.3 support.
+
+    * Added SGIX_pbuffer and SGIX_fbconfig extensions.
+
+    * Added UBB support, pageflipping and window flipping (described in
+      README).
+
+    * Improved Viewperf performance, Quake performance and performance
+      of immediate mode applications.
+
+    * Improved stability on AMD platforms.
+
+    * Fixed TwinView problem that caused garbage to appear on the screen
+      when starting X with a null option on head 0.
+
+    * Added workaround for XAA bug that causes system to hang when Lisa
+      Screensaver is run.  The problem is worked around by adding the
+      following line in the "Device" section of the XF86Config file:
+      'Option "XaaNoSolidFillTrap"'.  This option prevents XAA from
+      breaking wide lines (and polyggons) into trapezoids and avoids an
+      XAA clipping bug.
+      
+    * Fixed a system hang that occured on some chipsets when taking the
+      X server down (after having run once successfully) and restarting
+      it while using the DVI-I connected toa flat panel.
+
+    * Fixed problem where the performer application Perfly would hang
+      when run in forked-draw mode.
+
+    * Fixed problem where the X driver would segfault when given an
+      invalid MetaMode.
+
+    * Fixed problem where the console was not restored properly after
+      entering X and returning to the console.
+
+    * Fixed problem where X did not redraw completely after a screen
+      blank on GForce 2 Go and Quadro 2 Go.
+
+    * Fixed problem with initializing secondary card. In most cases, the
+      secondary card is posted correctly.  In the cases where it isn't,
+      there is now a workaround to initialize the card via X.
+
+    * Added workarounds to enable AGP on ALI chipsets and enable 4X AGP
+      on VIA chipsets (See README and use with caution!).
+
+2001-08-20 version 1.0-1541
+
+    * Changed behaviour of the X server so the NVIDIA splash screen will
+      only show up on the first run of X.  This can also be disabled by
+      setting an option in XF86Config (see README).
+
+    * Fixed problem where OpenGL applications would sometimes leave
+      portions of their rendering behind when the window was closed
+      using the kill button on the window banner.
+
+    * Fixed problem on mobile where X would respond to the wrong hotkey
+      event under some conditions.
+
+    * Fixed several more problems with indirect rendering.
+
+    * Fixed problem on SMP machines which occured when VT switching
+      while running gloss and gears indirect.
+
+    * Fixed problem where /proc/nv/card0 did not report nv20 correctly.
+
+    * Fixed problem on TNT2, where the driver would only support up to 4
+      threads per process.
+
+    * Fixed Xserver crash that occured when running two Xservers with
+      AGPgart.
+
+    * Fixed some problems in GLX that occured when running
+      multi-threaded  applications.
+
+2001-07-05 version 1.0-1420
+
+    * Added support for hotkey switching on mobile platforms.
+
+    * Fixed a hang on mobile that occurred after starting X, killing it
+      and restarting.
+
+    * Fixed a problem on mobile platforms that prevented DVD's from
+      displaying.
+
+    * Fixed a problem that caused OpenGL programs to segfault when using
+      a graphical login with xdm/kdm, and doing the following sequence:
+      login, mode switch, logout, log in and run a GL app.
+
+    * Fixed some indirect rendering problems.
+
+    * Fixed a problem that caused Xconfigure to fail on NVIDIA drivers.
+
+    * Fixed a crash that occured when X forwarding over SSH.
+
+    * Fixed OpenGL front buffer clipping bug.
+
+    * Added xf86XVOffscreenImage support so the V4L module can use the
+      hardware scaler on YUV surfaces.
+
+    * Improved X-Render acceleration.
+
+    * Fixed a bug that prevented X-Render acceleration on GeForce3.
+
+2001-05-14 version 1.0-1251
+
+    * Preliminary GeForce2 Go support.
+
+    * Added support for GeForce3 OpenGL and GLX extensions.
+
+    * Fixed many SMP bugs.
+
+    * Added TV-Out support.
+     
+    * Fixed DGA depth change bug.
+
+    * Rewrote 2D offscreen memory allocation.
+
+    * Fixed X-Video in TwinView.
+
+    * Acceleration for X-Render extension.
+
+    * Fixed up GLXPixmap rendering.
+
+    * Fixed problem with make current to same drawable but different
+      dpy.
+
+    * Fixed problem in which OpenGL would segfault when reading X
+      atoms.
+
+    * X now gets the DPI (dots per inch) from the monitor's EDID (rather
+      than just defaulting to 75 dpi).
+
+    * All DPMS modes are now supported.  There are still issues on flat
+      panels and on the second head of a TwinView system (please see the
+      README).
+
+    * Fixed support for AGP on systems with 1 GB or more of memory.
+
+2001-02-16 version 0.9-769
+
+    * Fixed problem where direct rendering applications were allowed to
+      continue rendering after xkill was called.
+
+    * Fixed problem where Tribes 2 crashed when compressed textures
+      (s3tc textures) were used.
+
+    * Some drawable leaks were fixed in X and GLX.
+
+    * Fixed problem where the application would hang when calling
+      glXMakeCurrent while holding the X server grab.
+
+    * Bios-posting problems on GeForce2 GTS and GeForce Ultra cards were
+      fixed.  This bug resulted in a significant performance loss.
+
+    * Added support for the X Render extension.
+
+    * TwinView functionality was enhanced so that each head can pan 
+      independently.
+
+    * Fixed problem on TNT and TNT2 where Xv(Shm)PutImage returned
+      BadAlloc in high resolutions when there was not enough video
+      bandwidth to display the YUV video overlay correctly. This works
+      now but the resulting display has artifacts.
+
+    * Fixed problem with cursor hanges in X.
+
+    * Fixed problem with X console not restoring on some monitors.
+
+    * Fixed problem with fork() and OpenGL rendering.
+
+    * Fixed problem with X driver module, nvidia_drv.o, being stripped
+      when RPM was rebuilt.
+
+    * Added missing PCI device ids for some TNT2 variants and GeForce3.
+
+    * Fixed problem where the kernel would often hang during X and/or
+      OpenGL operation when on an SMP machine and using the 2.4 kernel.
+
+    * Fixed SYNC_TO_VBLANK hang with 2.4 kernels.
+
+    * DPMS is partially working again. It is possible to set the "off"
+      option for dpms.  DPMS options "suspend" and "standby" are not
+      fully supported -- they simply blank the screen.  
+
+2000-12-20 version 0.96
+
+    * Fix many SMP problems.
+
+    * Fix memory management problems that arise with large RAM systems
+      (500M+).
+
+    * Add multi-mon OpenGL support.
+
+    * Add TwiNView support.
+
+    * More modeline handling fixes, added double-scan support.
+
+    * Fix bios-posting problems with TNT2 M64s and GeForce2 MXs.
+
+    * Dynamic run-time selection between nvagp and agpgart.
+
+    * Fix TNT2 OpenGL slowdowns (noticeable in UT).
+
+2000-08-30 version 0.95
+
+    * Improve XFree86 4.0.1 support.
+
+    * Re-fixed console switch lockup.
+
+    * Fix some AGP regressions.  Better detection/support for AGPGART.
+
+    * Fix color palette problems (xgamma, direct color visuals).
+
+    * Add bios posting override to help with some card problems (M64).
+
+    * Update included 2.4 support to newest test kernels.
+
+2000-07-07 version 0.94
+
+    * Add support for XFree86 4.0.1
+
+    * Fix modesetting problem.
+
+    * Add AGPGART support (nvagpgart v. 0.5-5).
+
+    * Add GeForce2 MX support.
+
+    * Fixed various hangs.
+
+    * Added FSAA support.
+
+    * Fixed problem where an opengl app dying during a console switch
+      would kill the X Server.
+
+2000-06-08 version 0.9-3
+
+    * Allow Modeline directives in the XF86Config file to override our
+      auto-detection of monitor resolutions and refresh rates.
+
+    * "Correct" fix for TNT memory-type problems.
+
+    * Fix for VT switch lockups.
+
+    * Fix for general ALI chipset lockups.
+
+    * Addition and documentation of some registry keys.  Check
+      os-registry.c in the kernel source directory for more details and
+      options.
+
+    * Work around Quake3 modeswitch crashing bug.  Note: It's really a
+      bug in dlopen().
+
+    * Major improvement in multi-threading behavior.
+
+    * Display list sharing with glXCreateContext works now.
+
+    * Faster implementation of glTexImage/glTexSubImage and
+      glCopyTexImage/glCopytexSubImage calls.
+
+    * Fixed kernel memory leak, relating to threaded OpenGL.  This
+      problem was most noticeable with xmms.
+
+    * Fix build problems with older 2.2.x kernels (RedHat 6.0).
+
+2000-05-02 version 0.9-2
+
+    * Fixed problem initializing TNT w/ SGRAM.
+
+    * Removed all GPL'd code from nv.c.
+
+    * Better logging and messages everywhere for tracking problems.
+
+    * Dynamic allocation of client data in kernel, rather than static.
+
+    * Incorporated *unsupported* 2.3 kernel changes for completeness.
+
+    * Makefile updates - add -D_LOOSE_KERNEL_NAMES, and default to 'make
+      install'.
+
+    * Improved mode switching in quake3 (still see occasional crashes).
+
+    * Changed installation name of libraries.  We now have a .1.0.1
+      revision name in the libraries.
+
+    * Temporarily force disabling of AGP fast writes for all chipsets.
+
+    * Fixed monitor issues, allow overriding of sync polarities.
+
+2000-04-25 version 0.9-1
+
+    * Initial Release.
+
