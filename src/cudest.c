@@ -144,7 +144,7 @@ invokegpu(int ctlfd,uint32_t fam,uint32_t meth,void *v,size_t vlen){
 	memset(&gpu,0,sizeof(gpu));
 	gpu.fam = fam;
 	gpu.meth = meth;
-	gpu.addr = (uint64_t)v;
+	gpu.addr = (uintptr_t)v;
 	gpu.len = vlen;
 	if(ioctl(ctlfd,NV_GPUINVOKE,&gpu)){
 		fprintf(stderr,"Error invoking GPU on fd %d (%s)\n",ctlfd,strerror(errno));
