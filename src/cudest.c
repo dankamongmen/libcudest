@@ -14,7 +14,8 @@
 #include <sys/ioctl.h>
 
 // 195.36.15, 195.36.24, 256.22, 256.29, 256.35, 260.19.29, 275.36
-#define CUDARUNVER	"275.36"
+// 295.40
+#define CUDARUNVER	"295.40"
 
 #define DEVROOT "/dev/nvidia"
 #define NVCTLDEV "/dev/nvidiactl"
